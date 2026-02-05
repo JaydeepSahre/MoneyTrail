@@ -35,7 +35,7 @@ public class CategoryController {
 	public String saveCategory(CategoryEntity categoryEntity) {
 		System.out.println("Category Name: " + categoryEntity.getCategoryName());
 		categoryRepository.save(categoryEntity);
-		return "redirect:/dashboard";
+		return "Dashboard";
 	}
 	
 	// ========== SUB CATEGORY OPERATIONS ==========
@@ -63,6 +63,6 @@ public class CategoryController {
 		// Save to database (categoryId will be stored as simple integer)
 		subCategoryRepository.save(subCategoryEntity);
 		
-		return "redirect:/dashboard";
+		return "Dashboard";
 	}
 }
