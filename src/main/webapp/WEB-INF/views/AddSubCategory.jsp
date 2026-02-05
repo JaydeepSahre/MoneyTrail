@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.grownited.entity.CategoryEntity" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -83,13 +85,18 @@
                     <i class="bi bi-tag text-primary"></i> Select Category
                 </label>
                 <select name="categoryId" class="form-select" required>
-                    <option value="" selected disabled>-- Choose Category --</option>
-                    
-                    <!-- Loop through categories from controller -->
-                    <c:forEach items="${categories}" var="category">
-                        <option value="${category.categoryId}">${category.categoryName}</option>
-                    </c:forEach>
-                </select>
+    				<option value="" selected disabled>-- Choose Category --</option>
+    					<%
+        					List<CategoryEntity> categories = (List<CategoryEntity>) request.getAttribute("categories");
+        					if (categories != null) {
+            					for (CategoryEntity category : categories) {
+    						%>
+                			<option value="<%= category.getCategoryId() %>"><%= category.getCategoryName() %></option>
+    						<%
+           			 			}
+        			        }
+    					%>
+				</select>
                 <small class="text-muted">Select the parent category</small>
             </div>
 
