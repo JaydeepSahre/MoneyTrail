@@ -23,24 +23,14 @@ public class AccountController {
 	// Save Account
 	@PostMapping("/saveaccount")
 	public String saveAccount(AccountEntity accountEntity) {
+
 		
-		// Print for debugging
-		System.out.println("Title: " + accountEntity.getTitle());
-		System.out.println("Amount: " + accountEntity.getAmount());
-		System.out.println("Is Default: " + accountEntity.getExDefault());
-		
-		// If checkbox is not checked, exDefault will be null, so set it to false
 		if (accountEntity.getExDefault() == null) {
 			accountEntity.setExDefault(false);
 		}
 		
-		// For now, set userId as null (will be set from session later)
-		accountEntity.setUserId(null);
-		
-		// Save to database
 		accountRepository.save(accountEntity);
 		
-		// Redirect to dashboard
 		return "Dashboard";
 	}
 }

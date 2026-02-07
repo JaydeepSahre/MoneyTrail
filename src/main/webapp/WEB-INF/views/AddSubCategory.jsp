@@ -9,19 +9,12 @@
     <meta charset="UTF-8">
     <title>Add Sub Category - MoneyTrail</title>
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <jsp:include page="AdminCSS.jsp" />
 
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .form-card {
@@ -30,6 +23,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             max-width: 500px;
             width: 100%;
+            margin: 0 auto;
         }
 
         .form-header {
@@ -45,28 +39,17 @@
             margin-bottom: 10px;
         }
 
-        .back-link {
-            color: white;
-            text-decoration: none;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 20px;
-        }
-
-        .back-link:hover {
-            color: #ffc107;
-        }
     </style>
 </head>
 
 <body>
 
-<a href="dashboard" class="back-link">
-    <i class="bi bi-arrow-left-circle-fill"></i>
-</a>
+<jsp:include page="AdminHeader.jsp" />
 
-<div class="form-card">
+<jsp:include page="AdminSidebar.jsp" />
+
+<div class="main-content">
+	<div class="form-card">
     
     <!-- Form Header -->
     <div class="form-header">
@@ -123,11 +106,10 @@
 
         </form>
     </div>
-
+	</div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<jsp:include page="AdminFooter.jsp" />
 
 </body>
 </html>

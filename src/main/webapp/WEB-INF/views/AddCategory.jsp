@@ -6,14 +6,17 @@
     <meta charset="UTF-8">
     <title>Add Category - MoneyTrail</title>
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <jsp:include page="AdminCSS.jsp" />
 </head>
 
 <body class="bg-light">
 
-<div class="container">
-    <div class="row justify-content-center align-items-center min-vh-100">
+<jsp:include page="AdminHeader.jsp" />
+
+<jsp:include page="AdminSidebar.jsp" />
+
+<div class="main-content">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
         <div class="col-12 col-sm-10 col-md-6 col-lg-5">
 
             <div class="card shadow-lg">
@@ -51,8 +54,7 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<jsp:include page="AdminFooter.jsp" />
 
 </body>
 </html>
