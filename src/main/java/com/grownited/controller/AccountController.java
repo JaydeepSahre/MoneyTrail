@@ -17,13 +17,11 @@ public class AccountController {
 	@Autowired
 	AccountRepository accountRepository;
 	
-	// Open Add Account Page
 	@GetMapping("/addaccount")
-	public String openAddAccountPage() {
-		return "AddAccount"; // JSP name
+	public String addAccount() {
+		return "AddAccount";
 	}
 	
-	// Save Account
 	@PostMapping("/saveaccount")
 	public String saveAccount(AccountEntity accountEntity) {
 
