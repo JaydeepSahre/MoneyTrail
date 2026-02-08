@@ -42,49 +42,47 @@ public class ExpenseController {
 	@Autowired
 	StatusRepository statusRepository;
 	
-	// Open Add Expense Page
 	@GetMapping("/addexpense")
-	public String openAddExpensePage(Model model) {
+	public String addExpense(Model model) {
 		
-		// Fetch all required data from database
 		List<CategoryEntity> categories = categoryRepository.findAll();
 		List<SubCategoryEntity> subCategories = subCategoryRepository.findAll();
 		List<VendorEntity> vendors = vendorRepository.findAll();
 		List<AccountEntity> accounts = accountRepository.findAll();
 		List<StatusEntity> statuses = statusRepository.findAll();
 		
-		// Send data to JSP
+		
 		model.addAttribute("categories", categories);
 		model.addAttribute("subCategories", subCategories);
 		model.addAttribute("vendors", vendors);
 		model.addAttribute("accounts", accounts);
 		model.addAttribute("statuses", statuses);
 		
-		return "AddExpense"; // JSP name
+		return "AddExpense";
 	}
 	
-	// Save Expense
 	@PostMapping("/saveexpense")
 	public String saveExpense(ExpenseEntity expenseEntity) {
-		
-		// Print for debugging
-		System.out.println("Title: " + expenseEntity.getTitle());
-		System.out.println("Amount: " + expenseEntity.getAmount());
-		System.out.println("Date: " + expenseEntity.getDate());
-		System.out.println("Category ID: " + expenseEntity.getCategoryId());
-		System.out.println("SubCategory ID: " + expenseEntity.getSubCategoryId());
-		System.out.println("Vendor ID: " + expenseEntity.getVendorId());
-		System.out.println("Account ID: " + expenseEntity.getAccountId());
-		System.out.println("Status ID: " + expenseEntity.getStatusId());
-		System.out.println("Description: " + expenseEntity.getDescription());
-		
-		// Set userId as null for now (will be set from session later)
-		expenseEntity.setUserId(null);
-		
-		// Save to database
 		expenseRepository.save(expenseEntity);
+		return "redirect:/listexpense";
+	}
+	
+	@GetMapping("/listexpense")
+	public String listExpense(Model model) {
+		List<ExpenseEntity> expenseList = expenseRepository.findAll();
+		List<CategoryEntity> categories = categoryRepository.findAll();
+		List<SubCategoryEntity> subCategories = subCategoryRepository.findAll();
+		List<VendorEntity> vendors = vendorRepository.findAll();
+		List<AccountEntity> accounts = accountRepository.findAll();
+		List<StatusEntity> statuses = statusRepository.findAll();
 		
-		// Redirect to dashboard
-		return "Dashboard";
+		model.addAttribute("expenseList", expenseList);
+		model.addAttribute("categories", categories);
+		model.addAttribute("subCategories", subCategories);
+		model.addAttribute("vendors", vendors);
+		model.addAttribute("accounts", accounts);
+		model.addAttribute("statuses", statuses);
+		
+		return "ListExpense";
 	}
 }

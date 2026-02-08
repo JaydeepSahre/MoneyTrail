@@ -16,6 +16,7 @@
 
     <div class="menu-section">Transactions</div>
     <a href="addexpense"><i class="bi bi-arrow-down-circle"></i>Add Expense</a>
+    <a href="listexpense"><i class="bi bi-list-ul"></i>List Expense</a>
     <a href="addincome"><i class="bi bi-arrow-up-circle"></i>Add Income</a>
 
     <div class="menu-section">Account</div>

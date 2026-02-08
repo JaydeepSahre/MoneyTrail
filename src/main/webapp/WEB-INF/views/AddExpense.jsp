@@ -193,9 +193,9 @@
                     <button type="submit" class="btn btn-primary btn-lg">
                         <i class="bi bi-check-circle"></i> Add Expense
                     </button>
-                    <a href="dashboard" class="btn btn-outline-secondary">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </a>
+                    <a href="listexpense" class="btn btn-outline-secondary">
+                                View All Expense
+                	</a>
                 </div>
 
             </form>
