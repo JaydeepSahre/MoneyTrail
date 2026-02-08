@@ -72,11 +72,11 @@
 
             <!-- Buttons -->
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-circle"></i> Add Vendor
+            	<button type="submit" class="btn btn-primary">
+                	Add Vendor
                 </button>
-                <a href="dashboard" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle"></i> Cancel
+                <a href="listvendor" class="btn btn-outline-secondary">
+                    View All Vendors
                 </a>
             </div>
 

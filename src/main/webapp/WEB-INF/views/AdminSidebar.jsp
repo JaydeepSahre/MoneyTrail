@@ -10,6 +10,7 @@
     <a href="addsubcategory"><i class="bi bi-tags"></i>Add Sub Category</a>
     <a href="listsubcategory"><i class="bi bi-list-ul"></i>List SubCategory</a>
     <a href="addvendor"><i class="bi bi-shop"></i>Add Vendor</a>
+    <a href="listvendor"><i class="bi bi-list-ul"></i>List Vendor</a>
     <a href="addaccount"><i class="bi bi-wallet2"></i>Add Account</a>
 
     <div class="menu-section">Transactions</div>
