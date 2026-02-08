@@ -1,7 +1,10 @@
 package com.grownited.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -31,6 +34,13 @@ public class AccountController {
 		
 		accountRepository.save(accountEntity);
 		
-		return "Dashboard";
+		return "redirect:/listaccount";
+	}
+	
+	@GetMapping("/listaccount")
+	public String listAccount(Model model) {
+		List<AccountEntity> accountList = accountRepository.findAll();
+		model.addAttribute("accountList", accountList);
+		return "ListAccount";
 	}
 }

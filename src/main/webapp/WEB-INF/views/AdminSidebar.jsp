@@ -12,6 +12,7 @@
     <a href="addvendor"><i class="bi bi-shop"></i>Add Vendor</a>
     <a href="listvendor"><i class="bi bi-list-ul"></i>List Vendor</a>
     <a href="addaccount"><i class="bi bi-wallet2"></i>Add Account</a>
+    <a href="listaccount"><i class="bi bi-list-ul"></i>List Account</a>
 
     <div class="menu-section">Transactions</div>
     <a href="addexpense"><i class="bi bi-arrow-down-circle"></i>Add Expense</a>
