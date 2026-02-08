@@ -2,6 +2,8 @@ package com.grownited.entity;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,7 @@ public class ExpenseEntity {
 	private Integer accountId;       // FK
 	private Integer statusId;        // FK
 	private Float amount;
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	private LocalDate date;
 	private String description;
 	private Integer userId;          // FK -> User

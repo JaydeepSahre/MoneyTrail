@@ -22,47 +22,43 @@ public class CategoryController {
 	@Autowired
 	SubCategoryRepository subCategoryRepository;
 	
-	// ========== CATEGORY OPERATIONS ==========
-	
-	// Open Add Category Page
 	@GetMapping("/addcategory")
-	public String openAddCategoryPage() {
+	public String AddCategory() {
 		return "AddCategory";
 	}
 	
-	// Save Category
 	@PostMapping("/savecategory")
 	public String saveCategory(CategoryEntity categoryEntity) {
-		System.out.println("Category Name: " + categoryEntity.getCategoryName());
 		categoryRepository.save(categoryEntity);
-		return "Dashboard";
+		return "redirect:/listcategory";
 	}
 	
-	// ========== SUB CATEGORY OPERATIONS ==========
+	@GetMapping("/listcategory")
+	public String listCategory(Model model) {
+		List<CategoryEntity> categoryList = categoryRepository.findAll();
+		model.addAttribute("categoryList", categoryList);
+		return "ListCategory";
+	}
 	
-	// Open Add Sub Category Page
 	@GetMapping("/addsubcategory")
-	public String openAddSubCategoryPage(Model model) {
-		// Fetch all categories from database
+	public String AddSubCategory(Model model) {
 		List<CategoryEntity> categories = categoryRepository.findAll();
-		
-		// Send categories to JSP
 		model.addAttribute("categories", categories);
-		
 		return "AddSubCategory";
 	}
 	
-	// Save Sub Category
 	@PostMapping("/savesubcategory")
 	public String saveSubCategory(SubCategoryEntity subCategoryEntity) {
-		
-		// Print for debugging
-		System.out.println("Category ID: " + subCategoryEntity.getCategoryId());
-		System.out.println("Sub Category Name: " + subCategoryEntity.getSubCategoryName());
-		
-		// Save to database (categoryId will be stored as simple integer)
 		subCategoryRepository.save(subCategoryEntity);
-		
-		return "Dashboard";
+		return "redirect:/listsubcategory";
+	}
+	
+	@GetMapping("/listsubcategory")
+	public String listSubCategory(Model model) {
+		List<SubCategoryEntity> subCategoryList = subCategoryRepository.findAll();
+		List<CategoryEntity> categories = categoryRepository.findAll();
+		model.addAttribute("subCategoryList", subCategoryList);
+		model.addAttribute("categories", categories);
+		return "ListSubCategory";
 	}
 }

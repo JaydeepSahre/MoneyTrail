@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="com.grownited.entity.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -116,16 +115,9 @@
                         </label>
                         <select name="categoryId" class="form-select" required>
                             <option value="" selected disabled>-- Select Category --</option>
-                            <%
-                                List<CategoryEntity> categories = (List<CategoryEntity>) request.getAttribute("categories");
-                                if (categories != null) {
-                                    for (CategoryEntity category : categories) {
-                            %>
-                                        <option value="<%= category.getCategoryId() %>"><%= category.getCategoryName() %></option>
-                            <%
-                                    }
-                                }
-                            %>
+                            <c:forEach var="category" items="${categories}">
+                                <option value="${category.categoryId}">${category.categoryName}</option>
+                            </c:forEach>
                         </select>
                     </div>
 
@@ -135,23 +127,16 @@
                         </label>
                         <select name="subCategoryId" class="form-select" required>
                             <option value="" selected disabled>-- Select Sub Category --</option>
-                            <%
-                                List<SubCategoryEntity> subCategories = (List<SubCategoryEntity>) request.getAttribute("subCategories");
-                                if (subCategories != null) {
-                                    for (SubCategoryEntity subCategory : subCategories) {
-                            %>
-                                        <option value="<%= subCategory.getSubCategoryId() %>"><%= subCategory.getSubCategoryName() %></option>
-                            <%
-                                    }
-                                }
-                            %>
+                            <c:forEach var="subCategory" items="${subCategories}">
+                                <option value="${subCategory.subCategoryId}">${subCategory.subCategoryName}</option>
+                            </c:forEach>
                         </select>
                     </div>
                 </div>
 
                 <!-- Payment Information -->
                 <h5 class="section-title">
-                    <i class="bi bi-wallet2"></i> Payment Information
+                    <i class="bi bi-wallet2"></i> Payment Information 
                 </h5>
 
                 <!-- Vendor and Account Row -->
@@ -162,16 +147,9 @@
                         </label>
                         <select name="vendorId" class="form-select" required>
                             <option value="" selected disabled>-- Select Vendor --</option>
-                            <%
-                                List<VendorEntity> vendors = (List<VendorEntity>) request.getAttribute("vendors");
-                                if (vendors != null) {
-                                    for (VendorEntity vendor : vendors) {
-                            %>
-                                        <option value="<%= vendor.getVendorId() %>"><%= vendor.getVendorName() %></option>
-                            <%
-                                    }
-                                }
-                            %>
+                            <c:forEach var="vendor" items="${vendors}">
+                                <option value="${vendor.vendorId}">${vendor.vendorName}</option>
+                            </c:forEach>
                         </select>
                     </div>
 
@@ -181,19 +159,10 @@
                         </label>
                         <select name="accountId" class="form-select" required>
                             <option value="" selected disabled>-- Select Account --</option>
-                            <%
-                                List<AccountEntity> accounts = (List<AccountEntity>) request.getAttribute("accounts");
-                                if (accounts != null) {
-                                    for (AccountEntity account : accounts) {
-                            %>
-                                        <option value="<%= account.getAccountId() %>">
-                                            <%= account.getTitle() %> - ₹<%= account.getAmount() %>
-                                        </option>
-                            <%
-                                    }
-                                }
-                            %>
-                        </select>
+                            <c:forEach var="account" items="${accounts}">
+                                <option value="${account.accountId}">${account.title} - ₹${account.amount}</option>
+                            </c:forEach>
+						</select>
                     </div>
                 </div>
 
@@ -204,16 +173,9 @@
                     </label>
                     <select name="statusId" class="form-select" required>
                         <option value="" selected disabled>-- Select Status --</option>
-                        <%
-                            List<StatusEntity> statuses = (List<StatusEntity>) request.getAttribute("statuses");
-                            if (statuses != null) {
-                                for (StatusEntity status : statuses) {
-                        %>
-                                    <option value="<%= status.getStatusId() %>"><%= status.getStatus() %></option>
-                        <%
-                                }
-                            }
-                        %>
+                        <c:forEach var="status" items="${statuses}">
+                            <option value="${status.statusId}">${status.status}</option>
+                        </c:forEach>
                     </select>
                 </div>
 
@@ -223,7 +185,7 @@
                         <i class="bi bi-card-text text-secondary"></i> Description
                     </label>
                     <textarea name="description" class="form-control" rows="3" 
-                              placeholder="Add any additional notes or details (optional)"></textarea>
+                              placeholder="Additional details about the expense (optional)"></textarea>
                 </div>
 
                 <!-- Buttons -->
