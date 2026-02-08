@@ -27,40 +27,33 @@ public class IncomeController {
 	@Autowired
 	StatusRepository statusRepository;
 	
-	// Open Add Income Page
 	@GetMapping("/addincome")
-	public String openAddIncomePage(Model model) {
-		
-		// Fetch required data from database
+	public String AddIncome(Model model) {
 		List<AccountEntity> accounts = accountRepository.findAll();
 		List<StatusEntity> statuses = statusRepository.findAll();
 		
-		// Send data to JSP
 		model.addAttribute("accounts", accounts);
 		model.addAttribute("statuses", statuses);
 		
-		return "AddIncome"; // JSP name
+		return "AddIncome";
 	}
 	
-	// Save Income
 	@PostMapping("/saveincome")
 	public String saveIncome(IncomeEntity incomeEntity) {
-		
-		// Print for debugging
-		System.out.println("Title: " + incomeEntity.getTitle());
-		System.out.println("Amount: " + incomeEntity.getAmount());
-		System.out.println("Date: " + incomeEntity.getDate());
-		System.out.println("Account ID: " + incomeEntity.getAccountId());
-		System.out.println("Status ID: " + incomeEntity.getStatusId());
-		System.out.println("Description: " + incomeEntity.getDescription());
-		
-		// Set userId as null for now (will be set from session later)
-		incomeEntity.setUserId(null);
-		
-		// Save to database
 		incomeRepository.save(incomeEntity);
+		return "redirect:/listincome";
+	}
+	
+	@GetMapping("/listincome")
+	public String listIncome(Model model) {
+		List<IncomeEntity> incomeList = incomeRepository.findAll();
+		List<AccountEntity> accounts = accountRepository.findAll();
+		List<StatusEntity> statuses = statusRepository.findAll();
 		
-		// Redirect to dashboard
-		return "Dashboard";
+		model.addAttribute("incomeList", incomeList);
+		model.addAttribute("accounts", accounts);
+		model.addAttribute("statuses", statuses);
+		
+		return "ListIncome";
 	}
 }

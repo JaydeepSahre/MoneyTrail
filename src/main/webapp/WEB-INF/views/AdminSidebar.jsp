@@ -18,6 +18,7 @@
     <a href="addexpense"><i class="bi bi-arrow-down-circle"></i>Add Expense</a>
     <a href="listexpense"><i class="bi bi-list-ul"></i>List Expense</a>
     <a href="addincome"><i class="bi bi-arrow-up-circle"></i>Add Income</a>
+    <a href="listincome"><i class="bi bi-list-ul"></i>List Income</a>
 
     <div class="menu-section">Account</div>
     <a href="login"><i class="bi bi-box-arrow-right"></i>Logout</a>

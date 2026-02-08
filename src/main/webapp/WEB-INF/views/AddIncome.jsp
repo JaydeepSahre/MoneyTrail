@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="java.util.List" %>
-<%@ page import="com.grownited.entity.*" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -115,18 +115,11 @@
                     </label>
                     <select name="accountId" class="form-select" required>
                         <option value="" selected disabled>-- Select Account --</option>
-                        <%
-                            List<AccountEntity> accounts = (List<AccountEntity>) request.getAttribute("accounts");
-                            if (accounts != null) {
-                                for (AccountEntity account : accounts) {
-                        %>
-                                    <option value="<%= account.getAccountId() %>">
-                                        <%= account.getTitle() %> - ₹<%= account.getAmount() %>
-                                    </option>
-                        <%
-                                }
-                            }
-                        %>
+                        <c:forEach items="${accounts}" var="account">
+                            <option value="${account.accountId}">
+                                ${account.title} - ₹${account.amount}
+                            </option>
+                        </c:forEach>
                     </select>
                     <small class="text-muted">Select the account where income will be credited</small>
                 </div>
@@ -138,16 +131,9 @@
                     </label>
                     <select name="statusId" class="form-select" required>
                         <option value="" selected disabled>-- Select Status --</option>
-                        <%
-                            List<StatusEntity> statuses = (List<StatusEntity>) request.getAttribute("statuses");
-                            if (statuses != null) {
-                                for (StatusEntity status : statuses) {
-                        %>
-                                    <option value="<%= status.getStatusId() %>"><%= status.getStatus() %></option>
-                        <%
-                                }
-                            }
-                        %>
+                        <c:forEach items="${statuses}" var="status">
+                            <option value="${status.statusId}">${status.status}</option>
+                        </c:forEach>
                     </select>
                 </div>
 
@@ -165,8 +151,8 @@
                     <button type="submit" class="btn btn-success btn-lg">
                         <i class="bi bi-check-circle"></i> Add Income
                     </button>
-                    <a href="dashboard" class="btn btn-outline-secondary">
-                        <i class="bi bi-x-circle"></i> Cancel
+                    <a href="listincome" class="btn btn-outline-secondary">
+                        View All Incomes
                     </a>
                 </div>
 
