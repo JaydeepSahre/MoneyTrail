@@ -2,7 +2,7 @@
 <div class="sidebar">
     <div class="logo"><i class="bi bi-cash-coin"></i> MoneyTrail</div>
 
-    <a href="dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
+    <a href="admin-dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
 
     <div class="menu-section">Master Data</div>
     <a href="addcategory"><i class="bi bi-tag"></i>Add Category</a>
