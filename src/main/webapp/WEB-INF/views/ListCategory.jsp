@@ -174,7 +174,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteCategory?id=${cat.categoryId}"
+                                    <a href="deletecategory?categoryId=${cat.categoryId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this category?')">
                                         <i class="bi bi-trash-fill"></i> Delete

@@ -192,7 +192,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteSubCategory?id=${subCat.subCategoryId}"
+                                    <a href="deletesubcategory?subCategoryId=${subCat.subCategoryId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this subcategory?')">
                                         <i class="bi bi-trash-fill"></i> Delete

@@ -61,4 +61,16 @@ public class CategoryController {
 		model.addAttribute("categories", categories);
 		return "ListSubCategory";
 	}
+	
+	@GetMapping("/deletecategory")
+	public String deleteCategory(Integer categoryId) {
+		categoryRepository.deleteById(categoryId);
+		return "redirect:/listcategory";
+	}
+	
+	@GetMapping("/deletesubcategory")
+	public String deleteSubCategory(Integer subCategoryId) {
+		subCategoryRepository.deleteById(subCategoryId);
+		return "redirect:/listsubcategory";
+	}
 }
