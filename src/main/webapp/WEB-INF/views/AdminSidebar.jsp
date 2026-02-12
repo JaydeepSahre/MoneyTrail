@@ -5,6 +5,8 @@
     <a href="admin-dashboard"><i class="bi bi-speedometer2"></i>Dashboard</a>
 
     <div class="menu-section">Master Data</div>
+    <a href="adduser"><i class="bi bi-person-plus"></i>Add User</a>
+    <a href="listuser"><i class="bi bi-list-ul"></i>List User</a>
     <a href="addcategory"><i class="bi bi-tag"></i>Add Category</a>
     <a href="listcategory"><i class="bi bi-list-ul"></i>List Category</a>
     <a href="addsubcategory"><i class="bi bi-tags"></i>Add Sub Category</a>
