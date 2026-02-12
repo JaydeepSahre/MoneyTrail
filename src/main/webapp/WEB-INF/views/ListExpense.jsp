@@ -248,7 +248,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteExpense?id=${expense.expenseId}"
+                                    <a href="deleteexpense?expenseId=${expense.expenseId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this expense?')">
                                         <i class="bi bi-trash-fill"></i> Delete

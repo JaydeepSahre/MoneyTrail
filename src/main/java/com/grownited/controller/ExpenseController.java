@@ -85,4 +85,10 @@ public class ExpenseController {
 		
 		return "ListExpense";
 	}
+	
+	@GetMapping("/deleteexpense")
+	public String deleteExpense(int expenseId) {
+		expenseRepository.deleteById(expenseId);
+		return "redirect:/listexpense";
+	}
 }
