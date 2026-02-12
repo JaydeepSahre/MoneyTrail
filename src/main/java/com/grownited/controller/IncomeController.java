@@ -56,4 +56,10 @@ public class IncomeController {
 		
 		return "ListIncome";
 	}
+	
+	@GetMapping("/deleteincome")
+	public String deleteIncome(int incomeId) {
+		incomeRepository.deleteById(incomeId);
+		return "redirect:/listincome";
+	}
 }

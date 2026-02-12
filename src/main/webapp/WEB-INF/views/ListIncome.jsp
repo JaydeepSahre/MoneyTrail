@@ -238,7 +238,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteIncome?id=${income.incomeId}"
+                                    <a href="deleteincome?incomeId=${income.incomeId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this income?')">
                                         <i class="bi bi-trash-fill"></i> Delete
