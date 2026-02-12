@@ -37,5 +37,11 @@ public class UserController {
 		model.addAttribute("userList", userList);
 		return "ListUser";
 	}
+	
+	@GetMapping("/deleteuser")
+	public String deleteUser(int userId) {
+		userRepository.deleteById(userId);
+		return "redirect:/listuser";
+	}
 
 }
