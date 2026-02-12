@@ -34,4 +34,10 @@ public class VendorController {
 		model.addAttribute("vendorList", vendorList);
 		return "ListVendor"; 
 	}
+	
+	@GetMapping("/deletevendor")
+	public String deleteVendor(Integer vendorId) {
+		vendorRepository.deleteById(vendorId);
+		return "redirect:/listvendor";
+	}
 }

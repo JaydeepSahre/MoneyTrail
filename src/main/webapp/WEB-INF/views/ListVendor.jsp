@@ -174,7 +174,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteVendor?id=${vendor.vendorId}"
+                                    <a href="deletevendor?vendorId=${vendor.vendorId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this vendor?')">
                                         <i class="bi bi-trash-fill"></i> Delete
