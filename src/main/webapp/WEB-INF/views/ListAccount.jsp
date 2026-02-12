@@ -226,7 +226,7 @@
                                        class="btn btn-sm btn-warning btn-action">
                                         <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
-                                    <a href="deleteAccount?id=${account.accountId}"
+                                    <a href="deleteaccount?accountId=${account.accountId}"
                                        class="btn btn-sm btn-danger btn-action"
                                        onclick="return confirm('Are you sure you want to delete this account?')">
                                         <i class="bi bi-trash-fill"></i> Delete

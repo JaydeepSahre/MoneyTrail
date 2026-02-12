@@ -41,4 +41,10 @@ public class AccountController {
 		model.addAttribute("accountList", accountList);
 		return "ListAccount";
 	}
+	
+	@GetMapping("/deleteaccount")
+	public String deleteAccount(Integer accountId) {
+		accountRepository.deleteById(accountId);
+		return "redirect:/listaccount";
+	}
 }
