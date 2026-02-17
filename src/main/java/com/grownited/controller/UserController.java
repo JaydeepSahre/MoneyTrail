@@ -43,5 +43,12 @@ public class UserController {
 		userRepository.deleteById(userId);
 		return "redirect:/listuser";
 	}
+	
+	@GetMapping("/viewuser")
+	public String viewUser(int userId, Model model) {
+		UserEntity userEntity = userRepository.findById(userId).orElse(null);
+		model.addAttribute("user", userEntity);
+		return "ViewUser";
+	}
 
 }
