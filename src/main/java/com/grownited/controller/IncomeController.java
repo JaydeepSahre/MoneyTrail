@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.grownited.entity.AccountEntity;
 import com.grownited.entity.IncomeEntity;
 import com.grownited.entity.StatusEntity;
+import com.grownited.entity.UserEntity;
 import com.grownited.repository.AccountRepository;
 import com.grownited.repository.IncomeRepository;
 import com.grownited.repository.StatusRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class IncomeController {
@@ -39,7 +42,9 @@ public class IncomeController {
 	}
 	
 	@PostMapping("/saveincome")
-	public String saveIncome(IncomeEntity incomeEntity) {
+	public String saveIncome(IncomeEntity incomeEntity,HttpSession session) {
+		UserEntity currentUser = (UserEntity) session.getAttribute("user");
+		incomeEntity.setUserId(currentUser.getUserId());
 		incomeRepository.save(incomeEntity);
 		return "redirect:/listincome";
 	}

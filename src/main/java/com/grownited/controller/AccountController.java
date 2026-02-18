@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.grownited.entity.AccountEntity;
+import com.grownited.entity.UserEntity;
 import com.grownited.repository.AccountRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AccountController {
@@ -23,13 +26,13 @@ public class AccountController {
 	}
 	
 	@PostMapping("/saveaccount")
-	public String saveAccount(AccountEntity accountEntity) {
-
-		
+	public String saveAccount(AccountEntity accountEntity, HttpSession session) {
 		if (accountEntity.getExDefault() == null) {
 			accountEntity.setExDefault(false);
 		}
 		
+		UserEntity currentUser = (UserEntity) session.getAttribute("user");
+		accountEntity.setUserId(currentUser.getUserId());
 		accountRepository.save(accountEntity);
 		
 		return "redirect:/listaccount";

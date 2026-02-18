@@ -13,6 +13,7 @@ import com.grownited.entity.CategoryEntity;
 import com.grownited.entity.ExpenseEntity;
 import com.grownited.entity.StatusEntity;
 import com.grownited.entity.SubCategoryEntity;
+import com.grownited.entity.UserEntity;
 import com.grownited.entity.VendorEntity;
 import com.grownited.repository.AccountRepository;
 import com.grownited.repository.CategoryRepository;
@@ -20,6 +21,8 @@ import com.grownited.repository.ExpenseRepository;
 import com.grownited.repository.StatusRepository;
 import com.grownited.repository.SubCategoryRepository;
 import com.grownited.repository.VendorRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ExpenseController {
@@ -62,7 +65,9 @@ public class ExpenseController {
 	}
 	
 	@PostMapping("/saveexpense")
-	public String saveExpense(ExpenseEntity expenseEntity) {
+	public String saveExpense(ExpenseEntity expenseEntity, HttpSession session) {
+		UserEntity currentUser = (UserEntity) session.getAttribute("user");
+		expenseEntity.setUserId(currentUser.getUserId());
 		expenseRepository.save(expenseEntity);
 		return "redirect:/listexpense";
 	}

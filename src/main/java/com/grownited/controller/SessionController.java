@@ -1,12 +1,18 @@
 package com.grownited.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.grownited.entity.UserEntity;
 import com.grownited.repository.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 public class SessionController {
@@ -23,6 +29,26 @@ public class SessionController {
 	public String openLoginPage() {
 		return "Login";
 	}
+	
+	@PostMapping("/authenticate")
+	public String authenticate(String email, String password, Model model, HttpSession session) {
+		Optional<UserEntity> op = userRepository.findByEmail(email);
+		
+		if(op.isPresent()) {
+			UserEntity userEntity = op.get();
+			session.setAttribute("user", userEntity);
+			if(userEntity.getPassword().equals(password)) {
+				if(userEntity.getRole().equals("Admin")) {
+					return "redirect:/admin-dashboard";
+				}else if(userEntity.getRole().equals("Customer")) {
+					return "redirect:/customer-dashboard";
+				}
+			}
+		}
+		model.addAttribute("error", "Invalid Credentials");
+		return "Login";
+	}
+	
 	
 	@GetMapping("/forgetpassword")
 	public String openForgetPasswordPage() {
@@ -46,6 +72,12 @@ public class SessionController {
 		
 		//call repository save method
 		userRepository.save(userEntity);
+		return "Login";
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
 		return "Login";
 	}
 	

@@ -15,6 +15,7 @@ public class SubCategoryEntity {
 	private Integer subCategoryId;   // PK
 	private String subCategoryName;
 	private Integer categoryId;      // FK -> Category
+	private Integer userId;        // FK -> User
 	
 	public Integer getSubCategoryId() {
 		return subCategoryId;
@@ -34,6 +35,11 @@ public class SubCategoryEntity {
 	public void setCategoryId(Integer categoryId) {
 		this.categoryId = categoryId;
 	}
-
+	public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
 	
 }

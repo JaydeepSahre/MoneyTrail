@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.grownited.entity.CategoryEntity;
 import com.grownited.entity.SubCategoryEntity;
+import com.grownited.entity.UserEntity;
 import com.grownited.repository.CategoryRepository;
 import com.grownited.repository.SubCategoryRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CategoryController {
@@ -28,7 +31,9 @@ public class CategoryController {
 	}
 	
 	@PostMapping("/savecategory")
-	public String saveCategory(CategoryEntity categoryEntity) {
+	public String saveCategory(CategoryEntity categoryEntity, HttpSession session) {
+		UserEntity currentLogInUser = (UserEntity) session.getAttribute("user");
+		categoryEntity.setUserId(currentLogInUser.getUserId());
 		categoryRepository.save(categoryEntity);
 		return "redirect:/listcategory";
 	}
@@ -48,7 +53,9 @@ public class CategoryController {
 	}
 	
 	@PostMapping("/savesubcategory")
-	public String saveSubCategory(SubCategoryEntity subCategoryEntity) {
+	public String saveSubCategory(SubCategoryEntity subCategoryEntity, HttpSession session) {
+		UserEntity currentLogInUser = (UserEntity) session.getAttribute("user");
+		subCategoryEntity.setUserId(currentLogInUser.getUserId());
 		subCategoryRepository.save(subCategoryEntity);
 		return "redirect:/listsubcategory";
 	}

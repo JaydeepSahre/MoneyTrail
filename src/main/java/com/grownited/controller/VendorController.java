@@ -8,8 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.grownited.entity.UserEntity;
 import com.grownited.entity.VendorEntity;
 import com.grownited.repository.VendorRepository;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class VendorController {
@@ -23,7 +26,9 @@ public class VendorController {
 	}
 	
 	@PostMapping("/savevendor")
-	public String saveVendor(VendorEntity vendorEntity) {
+	public String saveVendor(VendorEntity vendorEntity, HttpSession session) {
+		UserEntity currentLogInUser = (UserEntity) session.getAttribute("user");
+		vendorEntity.setUserId(currentLogInUser.getUserId());
 		vendorRepository.save(vendorEntity);
 		return "redirect:/listvendor";
 	}

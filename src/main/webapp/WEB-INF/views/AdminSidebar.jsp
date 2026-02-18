@@ -23,5 +23,5 @@
     <a href="listincome"><i class="bi bi-list-ul"></i>List Income</a>
 
     <div class="menu-section">Account</div>
-    <a href="login"><i class="bi bi-box-arrow-right"></i>Logout</a>
+    <a href="logout"><i class="bi bi-box-arrow-right"></i>Logout</a>
 </div>

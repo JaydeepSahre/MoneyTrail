@@ -22,7 +22,7 @@
                     <h3 class="text-center mb-4">Login</h3>
 
                     <!-- Login Form -->
-                    <form action="LoginServlet" method="post">
+                    <form action="authenticate" method="post">
 
                         <!-- Email -->
                         <div class="mb-3">
@@ -55,7 +55,9 @@
                         Forget Password?
                         <a href="forgetpassword">click here</a>
                     </p>
-
+                    <span class="text-danger">
+                        ${error}
+		            </span>	
                 </div>
             </div>
 
