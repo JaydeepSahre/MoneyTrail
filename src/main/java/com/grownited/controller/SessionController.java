@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.grownited.entity.UserEntity;
 import com.grownited.repository.UserRepository;
+import com.grownited.service.MailerService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,6 +20,9 @@ public class SessionController {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	MailerService mailerService;
 	
 	@GetMapping("/signup")
 	public String openSignupPage() {
@@ -72,6 +76,7 @@ public class SessionController {
 		
 		//call repository save method
 		userRepository.save(userEntity);
+		mailerService.sendWelcomeEmail(userEntity);
 		return "Login";
 	}
 	
