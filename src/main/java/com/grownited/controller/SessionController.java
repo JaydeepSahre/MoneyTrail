@@ -7,9 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.grownited.entity.UserEntity;
 import com.grownited.repository.UserRepository;
+import com.grownited.service.ForgotPasswordService;
 import com.grownited.service.MailerService;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +25,9 @@ public class SessionController {
 	
 	@Autowired
 	MailerService mailerService;
+	
+	@Autowired
+	ForgotPasswordService forgotPasswordService;
 	
 	@GetMapping("/signup")
 	public String openSignupPage() {
@@ -58,6 +63,50 @@ public class SessionController {
 	public String openForgetPasswordPage() {
 		return "ForgetPassword";
 	}
+	
+    // STEP 2: send OTP
+    @PostMapping("/send-otp")
+    public String sendOtp(@RequestParam String email, Model model) {
+
+        boolean sent = forgotPasswordService.sendOtp(email);
+
+        if (!sent) {
+            model.addAttribute("error", "Email not registered");
+            return "ForgetPassword";
+        }
+
+        model.addAttribute("email", email);
+        return "VerifyOtp";
+    }
+
+    // STEP 3: verify OTP
+    @PostMapping("/verify-otp")
+    public String verifyOtp(
+            @RequestParam String email,
+            @RequestParam String otp,
+            Model model) {
+
+        boolean valid = forgotPasswordService.verifyOtp(email, otp);
+
+        if (!valid) {
+            model.addAttribute("error", "Invalid OTP");
+            model.addAttribute("email", email);
+            return "VerifyOtp";
+        }
+
+        model.addAttribute("email", email);
+        return "ResetPassword";
+    }
+
+    // STEP 4: reset password
+    @PostMapping("/reset")
+    public String resetPassword(
+            @RequestParam String email,
+            @RequestParam String password) {
+
+        forgotPasswordService.updatePassword(email, password);
+        return "redirect:/login";
+    }
 	
 	@PostMapping("/register")
 	public String register(UserEntity userEntity) {

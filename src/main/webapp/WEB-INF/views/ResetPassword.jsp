@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Forgot Password</title>
+    <title>Reset Password</title>
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,25 +20,30 @@
             <div class="card shadow-lg">
                 <div class="card-body p-4">
 
-                    <h4 class="text-center mb-3">Forgot Password</h4>
+                    <h4 class="text-center mb-3">Reset Password</h4>
                     <p class="text-center text-muted mb-4">
-                        Enter your registered email
+                        Set your new password
                     </p>
 
-                    <!-- Forgot Password Form -->
-                    <form action="send-otp" method="post">
+                    <!-- Reset Password Form -->
+                    <form action="reset" method="post">
 
-                        <!-- Email -->
+                        <!-- Hidden Email -->
+                        <input type="hidden" name="email" value="${email}"/>
+
+                        <!-- New Password -->
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control"
-                                   placeholder="Enter your email" required>
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="password"
+                                   class="form-control"
+                                   placeholder="Enter new password"
+                                   required>
                         </div>
 
                         <!-- Submit -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
-                                Send OTP
+                                Reset Password
                             </button>
                         </div>
 

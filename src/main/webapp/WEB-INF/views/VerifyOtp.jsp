@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Forgot Password</title>
+    <title>Verify OTP</title>
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,32 +20,42 @@
             <div class="card shadow-lg">
                 <div class="card-body p-4">
 
-                    <h4 class="text-center mb-3">Forgot Password</h4>
+                    <h4 class="text-center mb-3">Verify OTP</h4>
                     <p class="text-center text-muted mb-4">
-                        Enter your registered email
+                        Enter the OTP sent to your email
                     </p>
 
-                    <!-- Forgot Password Form -->
-                    <form action="send-otp" method="post">
+                    <!-- Error Message -->
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger text-center">
+                            ${error}
+                        </div>
+                    </c:if>
 
-                        <!-- Email -->
+                    <!-- Verify OTP Form -->
+                    <form action="verify-otp" method="post">
+
+                        <!-- Hidden Email -->
+                        <input type="hidden" name="email" value="${email}"/>
+
+                        <!-- OTP -->
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control"
-                                   placeholder="Enter your email" required>
+                            <label class="form-label">OTP</label>
+                            <input type="text" name="otp" class="form-control"
+                                   placeholder="Enter OTP" required>
                         </div>
 
                         <!-- Submit -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                Send OTP
+                            <button type="submit" class="btn btn-success">
+                                Verify OTP
                             </button>
                         </div>
 
                     </form>
 
                     <div class="text-center mt-3">
-                        <a href="login">Back to Login</a>
+                        <a href="forgetpassword">Change Email</a>
                     </div>
 
                 </div>

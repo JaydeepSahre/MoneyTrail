@@ -54,4 +54,23 @@ public class MailerService {
             throw new RuntimeException("Failed to send welcome email", e);
         }
     }
+    
+    public void sendOtpEmail(UserEntity user, String otp) {
+
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(user.getEmail());
+            helper.setSubject("MoneyTrail - Forgot Password OTP");
+            helper.setText(
+                "Hello,\n\nYour OTP for password reset is: " + otp +
+                "\n\nRegards,\nMoneyTrail"
+            );
+
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
