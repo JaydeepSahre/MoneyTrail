@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.grownited.entity.UserEntity;
 import com.grownited.repository.UserRepository;
@@ -70,7 +69,7 @@ public class SessionController {
 	
     // STEP 2: send OTP
     @PostMapping("/send-otp")
-    public String sendOtp(@RequestParam String email, Model model) {
+    public String sendOtp(String email, Model model) {
 
         boolean sent = forgotPasswordService.sendOtp(email);
 
@@ -85,10 +84,7 @@ public class SessionController {
 
     // STEP 3: verify OTP
     @PostMapping("/verify-otp")
-    public String verifyOtp(
-            @RequestParam String email,
-            @RequestParam String otp,
-            Model model) {
+    public String verifyOtp(String email,String otp,Model model) {
 
         boolean valid = forgotPasswordService.verifyOtp(email, otp);
 
@@ -104,9 +100,7 @@ public class SessionController {
 
     // STEP 4: reset password
     @PostMapping("/reset")
-    public String resetPassword(
-            @RequestParam String email,
-            @RequestParam String password) {
+    public String resetPassword(String email,String password) {
 
         forgotPasswordService.updatePassword(email, password);
         return "redirect:/login";

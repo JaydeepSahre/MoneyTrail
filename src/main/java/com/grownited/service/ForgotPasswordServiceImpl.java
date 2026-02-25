@@ -58,8 +58,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         UserEntity user = userRepository.findByEmail(email).orElseThrow();
 
-        // ⚠ plain password for now (hash later)
-        user.setPassword(newPassword);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         // clear OTP after success
