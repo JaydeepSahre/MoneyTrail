@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.grownited.entity.UserEntity;
@@ -17,6 +18,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Autowired
     private MailerService mailerService;
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public boolean sendOtp(String email) {
@@ -56,7 +60,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         // ⚠ plain password for now (hash later)
         user.setPassword(newPassword);
-
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
         // clear OTP after success
         user.setOtp(null);
 
