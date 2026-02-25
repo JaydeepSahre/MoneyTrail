@@ -3,6 +3,7 @@ package com.grownited.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,9 @@ public class SessionController {
 	@Autowired
 	ForgotPasswordService forgotPasswordService;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/signup")
 	public String openSignupPage() {
 		return "Signup"; //jsp name
@@ -46,7 +50,7 @@ public class SessionController {
 		if(op.isPresent()) {
 			UserEntity userEntity = op.get();
 			session.setAttribute("user", userEntity);
-			if(userEntity.getPassword().equals(password)) {
+			if (passwordEncoder.matches(password, userEntity.getPassword())) {
 				if(userEntity.getRole().equals("Admin")) {
 					return "redirect:/admin-dashboard";
 				}else if(userEntity.getRole().equals("Customer")) {
@@ -110,19 +114,18 @@ public class SessionController {
 	
 	@PostMapping("/register")
 	public String register(UserEntity userEntity) {
-		System.out.println(userEntity.getFirstName());
-		System.out.println(userEntity.getLastName());
-		System.out.println(userEntity.getEmail());
-		System.out.println(userEntity.getContactNum());
-		System.out.println(userEntity.getBirthYear());
-		System.out.println(userEntity.getGender());
-		System.out.println(userEntity.getPassword());
+
 		System.out.println(userEntity.getProfilePicURL());
 		
 		userEntity.setRole("Customer");
 		userEntity.setCreatAtDate(java.time.LocalDate.now());
 		userEntity.setActive(true);
 		
+		// encode password
+		String encodedPassword = passwordEncoder.encode(userEntity.getPassword());
+		System.out.println(encodedPassword);
+		userEntity.setPassword(encodedPassword);
+					
 		//call repository save method
 		userRepository.save(userEntity);
 		mailerService.sendWelcomeEmail(userEntity);
