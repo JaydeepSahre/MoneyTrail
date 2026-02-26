@@ -6,10 +6,10 @@
         <span>Welcome, <strong>${sessionScope.user.firstName}</strong></span>
         <c:if
 						test="${not empty sessionScope.user.profilePicURL}">
-						<img src="${sessionScope.user.profilePicURL}" alt="profile" class="rounded-circle" />
+						<img src="${sessionScope.user.profilePicURL}" alt="profile" class="profile-img" />
 
 					</c:if> <c:if test="${empty sessionScope.user.profilePicURL}">
-						<img src="https://via.placeholder.com/40" class="rounded-circle" />
+						<img src="https://via.placeholder.com/40" class="profile-img" />
 					</c:if>
     </div>
 </div>

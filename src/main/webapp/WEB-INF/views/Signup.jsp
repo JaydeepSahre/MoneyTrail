@@ -21,7 +21,7 @@
 
                     <h3 class="text-center mb-4">Create Account</h3>
 
-                    <form action="register" method="post">
+                    <form action="register" method="post" enctype="multipart/form-data">
 
                         <!-- Name Row -->
                         <div class="row">
@@ -84,7 +84,7 @@
                         <!-- Profile Picture -->
                         <div class="mb-3">
                             <label class="form-label">Profile Picture</label>
-                            <input type="file" name="profilePicURL" class="form-control" accept="image/*">
+                            <input type="file" name="profilePic" class="form-control">
                         </div>
 
                         <!-- Submit -->

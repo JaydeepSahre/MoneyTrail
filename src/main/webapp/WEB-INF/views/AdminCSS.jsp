@@ -94,6 +94,15 @@
         padding: 0 30px;
         z-index: 900;
     }
+    
+    .profile-img{
+	  width:40px;
+	  height:40px;
+	  border-radius:50%;
+	  object-fit:cover;     /* prevents stretching */
+	  flex:0 0 40px;        /* prevents shrinking/growing */
+	  display:block;
+	}
 
     /* ================= MAIN CONTENT ================= */
     .main-content {
