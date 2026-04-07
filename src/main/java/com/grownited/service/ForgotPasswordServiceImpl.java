@@ -50,7 +50,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         UserEntity user = optionalUser.get();
 
-        return otp.equals(user.getOtp());
+        return otp != null && otp.equals(user.getOtp());
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         UserEntity user = userRepository.findByEmail(email).orElseThrow();
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
         // clear OTP after success
         user.setOtp(null);

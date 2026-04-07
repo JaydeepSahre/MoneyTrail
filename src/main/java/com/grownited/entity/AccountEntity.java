@@ -1,5 +1,7 @@
 package com.grownited.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,11 +14,13 @@ public class AccountEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer accountId;       // PK
-	private String title;            // Credit Card, Debit Card, Cash
+	private Integer accountId;
+	private String accountName;
+	private String accountType;
+	private BigDecimal openingBalance;
+	private String bankName;
 	private Boolean exDefault;
-	private Float amount;
-	private Integer userId;          // FK -> User
+	private Integer userId;
 	
 	public Integer getAccountId() {
 		return accountId;
@@ -24,11 +28,29 @@ public class AccountEntity {
 	public void setAccountId(Integer accountId) {
 		this.accountId = accountId;
 	}
-	public String getTitle() {
-		return title;
+	public String getAccountName() {
+		return accountName;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+	public String getAccountType() {
+		return accountType;
+	}
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+	public BigDecimal getOpeningBalance() {
+		return openingBalance;
+	}
+	public void setOpeningBalance(BigDecimal openingBalance) {
+		this.openingBalance = openingBalance;
+	}
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 	public Boolean getExDefault() {
 		return exDefault;
@@ -36,18 +58,11 @@ public class AccountEntity {
 	public void setExDefault(Boolean exDefault) {
 		this.exDefault = exDefault;
 	}
-	public Float getAmount() {
-		return amount;
-	}
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
 	public Integer getUserId() {
 		return userId;
 	}
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
-
 	
 }

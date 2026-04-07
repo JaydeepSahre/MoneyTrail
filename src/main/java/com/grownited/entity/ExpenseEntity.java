@@ -1,8 +1,7 @@
 package com.grownited.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,18 +15,17 @@ public class ExpenseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer expenseId;       // PK
-	private String title;
-	private Integer categoryId;      // FK
-	private Integer subCategoryId;   // FK
-	private Integer vendorId;        // FK
-	private Integer accountId;       // FK
-	private Integer statusId;        // FK
-	private Float amount;
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	private LocalDate date;
+	private Integer expenseId;
+	private BigDecimal amount;
+	private LocalDate expenseDate;
 	private String description;
-	private Integer userId;          // FK -> User
+	private Integer categoryId;
+	private Integer subCategoryId;
+	private Integer vendorId;
+	private Integer accountId;
+	private Integer statusId;
+	private String paymentMode;
+	private Integer userId;
 	
 	public Integer getExpenseId() {
 		return expenseId;
@@ -35,11 +33,23 @@ public class ExpenseEntity {
 	public void setExpenseId(Integer expenseId) {
 		this.expenseId = expenseId;
 	}
-	public String getTitle() {
-		return title;
+	public BigDecimal getAmount() {
+		return amount;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+	public LocalDate getExpenseDate() {
+		return expenseDate;
+	}
+	public void setExpenseDate(LocalDate expenseDate) {
+		this.expenseDate = expenseDate;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public Integer getCategoryId() {
 		return categoryId;
@@ -71,23 +81,11 @@ public class ExpenseEntity {
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
 	}
-	public Float getAmount() {
-		return amount;
+	public String getPaymentMode() {
+		return paymentMode;
 	}
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
-	public LocalDate getDate() {
-		return date;
-	}
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 	public Integer getUserId() {
 		return userId;

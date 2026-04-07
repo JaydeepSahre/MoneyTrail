@@ -14,7 +14,6 @@ public class VendorEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer vendorId;        // PK
 	private String vendorName;
-	private Integer userId;        // FK -> User
 	
 	public Integer getVendorId() {
 		return vendorId;
@@ -27,12 +26,6 @@ public class VendorEntity {
 	}
 	public void setVendorName(String vendorName) {
 		this.vendorName = vendorName;
-	}
-	public Integer getUserId() {
-		return userId;
-	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
 	}
 
 }

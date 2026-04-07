@@ -13,7 +13,7 @@ public class StatusEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer statusId;        // PK
-	private String status; 			// Paid, UnPaid, PartialPaid
+	private String statusName; 			// Paid, UnPaid, PartialPaid
 	
 	public Integer getStatusId() {
 		return statusId;
@@ -21,12 +21,11 @@ public class StatusEntity {
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
 	}
-	public String getStatus() {
-		return status;
+	public String getStatusName() {
+		return statusName;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
 	}
-
 	
 }

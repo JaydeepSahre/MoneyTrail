@@ -1,5 +1,6 @@
 package com.grownited.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,5 +14,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer>{
 	
 	Optional<UserEntity> findByEmail(String email);
 	List<UserEntity> findByRole(String role);
-	
+	long countByActiveTrue();
+
+	List<UserEntity> findTop7ByOrderByUserIdDesc();
+
+	long countByCreatAtDate(LocalDate date);
 }

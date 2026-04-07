@@ -14,7 +14,8 @@ public class CategoryEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer categoryId;
 	private String categoryName;
-	private Integer userId;  // FK -> User
+	private String categoryType;
+	private Integer userId;
 	
 	public Integer getCategoryId() {
 		return categoryId;
@@ -28,11 +29,18 @@ public class CategoryEntity {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
+	public String getCategoryType() {
+		return categoryType;
+	}
+	public void setCategoryType(String categoryType) {
+		this.categoryType = categoryType;
+	}
 	public Integer getUserId() {
 		return userId;
 	}
 	public void setUserId(Integer userId) {
 		this.userId = userId;
-	}	
+	}
+	
 	
 }

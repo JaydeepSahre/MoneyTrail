@@ -1,5 +1,6 @@
 package com.grownited.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
@@ -14,14 +15,14 @@ public class IncomeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer incomeId;        // PK
-	private String title;
-	private LocalDate date;
-	private Integer userId;          // FK -> User
-	private Integer accountId;       // FK
-	private String description;
-	private Integer statusId;        // FK
-	private Float amount;
+	private Integer incomeId;
+	private BigDecimal amount;
+	private LocalDate incomeDate;
+	private String incomeSource;
+	private Integer accountId;
+	private Integer statusId;
+	private String paymentMode;
+	private Integer userId;
 	
 	public Integer getIncomeId() {
 		return incomeId;
@@ -29,23 +30,23 @@ public class IncomeEntity {
 	public void setIncomeId(Integer incomeId) {
 		this.incomeId = incomeId;
 	}
-	public String getTitle() {
-		return title;
+	public BigDecimal getAmount() {
+		return amount;
 	}
-	public void setTitle(String title) {
-		this.title = title;
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
 	}
-	public LocalDate getDate() {
-		return date;
+	public LocalDate getIncomeDate() {
+		return incomeDate;
 	}
-	public void setDate(LocalDate date) {
-		this.date = date;
+	public void setIncomeDate(LocalDate incomeDate) {
+		this.incomeDate = incomeDate;
 	}
-	public Integer getUserId() {
-		return userId;
+	public String getIncomeSource() {
+		return incomeSource;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setIncomeSource(String incomeSource) {
+		this.incomeSource = incomeSource;
 	}
 	public Integer getAccountId() {
 		return accountId;
@@ -53,23 +54,23 @@ public class IncomeEntity {
 	public void setAccountId(Integer accountId) {
 		this.accountId = accountId;
 	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	public Integer getStatusId() {
 		return statusId;
 	}
 	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
 	}
-	public Float getAmount() {
-		return amount;
+	public String getPaymentMode() {
+		return paymentMode;
 	}
-	public void setAmount(Float amount) {
-		this.amount = amount;
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
 	}
-
+	public Integer getUserId() {
+		return userId;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+	
 }
