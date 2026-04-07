@@ -3,6 +3,10 @@ package com.grownited.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -87,11 +91,31 @@ public class VendorController {
      * - vendorList → List<VendorEntity>
      */
     @GetMapping("/listvendor")
-    public String listVendors(HttpSession session, Model model) {
+    public String listVendors(
+            @RequestParam(defaultValue = "0")          int    page,
+            @RequestParam(defaultValue = "10")         int    size,
+            @RequestParam(defaultValue = "")           String keyword,
+            @RequestParam(defaultValue = "vendorName") String sortBy,
+            @RequestParam(defaultValue = "asc")        String direction,
+            HttpSession session, Model model) {
         if (requireLogin(session) == null) return "redirect:/login";
 
-        List<VendorEntity> vendorList = vendorRepository.findAll();
-        model.addAttribute("vendorList", vendorList);
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<VendorEntity> vendorPage;
+        if (keyword != null && !keyword.isBlank()) {
+            vendorPage = vendorRepository.findByVendorNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            vendorPage = vendorRepository.findAll(pageable);
+        }
+
+        model.addAttribute("vendorPage", vendorPage);
+        model.addAttribute("keyword",    keyword);
+        model.addAttribute("sortBy",     sortBy);
+        model.addAttribute("direction",  direction);
         model.addAttribute("activeMenu", "vendor");
 
         return "pages/vendor/ListVendor";

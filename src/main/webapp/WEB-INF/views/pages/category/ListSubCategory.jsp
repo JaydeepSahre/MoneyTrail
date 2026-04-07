@@ -21,9 +21,7 @@
   <div class="main-area">
     <jsp:include page="/WEB-INF/views/layout/header.jsp"/>
     <main class="page-content">
-
       <jsp:include page="/WEB-INF/views/components/alert.jsp"/>
-
       <div class="page-header">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
@@ -37,50 +35,69 @@
             <h1 class="page-title"><i class="bi bi-diagram-3-fill"></i> Sub-Categories</h1>
             <p class="page-subtitle">Detailed sub-groupings under your main categories</p>
           </div>
-          <a href="${pageContext.request.contextPath}/addsubcategory" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i> Add Sub-Category
-          </a>
+          <a href="${pageContext.request.contextPath}/addsubcategory" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Sub-Category</a>
         </div>
       </div>
-
       <div class="card">
         <div class="card-header">
-          <div class="card-title">
-            All Sub-Categories
-            <span class="badge badge-neutral ms-2">${not empty subCategoryList ? subCategoryList.size() : 0}</span>
-          </div>
-          <div class="search-box" style="min-width:240px;">
-            <i class="bi bi-search" style="color:var(--text-muted);font-size:13px;"></i>
-            <input type="text" placeholder="Search sub-categories..." oninput="filterTable(this.value,'scTable')">
-          </div>
+          <div class="card-title">All Sub-Categories <span class="badge badge-neutral ms-2">${subCategoryPage.totalElements}</span></div>
+          <form method="get" action="${pageContext.request.contextPath}/listsubcategory" class="d-flex align-items-center gap-2">
+            <div class="search-box" style="min-width:240px;">
+              <i class="bi bi-search" style="color:var(--text-muted);font-size:13px;"></i>
+              <input type="text" name="keyword" value="${keyword}" placeholder="Search sub-categories...">
+            </div>
+            <input type="hidden" name="sortBy"    value="${sortBy}">
+            <input type="hidden" name="direction" value="${direction}">
+            <input type="hidden" name="size"      value="${subCategoryPage.size}">
+            <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+            <c:if test="${not empty keyword}"><a href="${pageContext.request.contextPath}/listsubcategory" class="btn btn-secondary btn-sm">Clear</a></c:if>
+          </form>
         </div>
         <div class="card-body p-0">
           <c:choose>
-            <c:when test="${empty subCategoryList}">
+            <c:when test="${subCategoryPage.totalElements == 0}">
               <div class="empty-state">
                 <div class="empty-state-icon"><i class="bi bi-diagram-3"></i></div>
                 <p class="empty-state-title">No sub-categories yet</p>
                 <p class="empty-state-desc">Sub-categories provide deeper granularity under each category.</p>
-                <a href="${pageContext.request.contextPath}/addsubcategory" class="btn btn-primary mt-3">
-                  <i class="bi bi-plus-lg me-1"></i> Add Sub-Category
-                </a>
+                <a href="${pageContext.request.contextPath}/addsubcategory" class="btn btn-primary mt-3"><i class="bi bi-plus-lg me-1"></i> Add Sub-Category</a>
               </div>
             </c:when>
             <c:otherwise>
+              <c:url value="/listsubcategory" var="baseUrl">
+                <c:param name="keyword" value="${keyword}"/>
+                <c:param name="size"    value="${subCategoryPage.size}"/>
+              </c:url>
               <div class="table-responsive">
                 <table class="table" id="scTable">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Sub-Category Name</th>
+                      <th>
+                        <c:url value="/listsubcategory" var="sortUrlName">
+                          <c:param name="keyword"   value="${keyword}"/>
+                          <c:param name="sortBy"    value="subCategoryName"/>
+                          <c:param name="direction" value="${sortBy == 'subCategoryName' && direction == 'asc' ? 'desc' : 'asc'}"/>
+                          <c:param name="size"      value="${subCategoryPage.size}"/>
+                          <c:param name="page"      value="0"/>
+                        </c:url>
+                        <a href="${sortUrlName}" style="color:inherit;text-decoration:none;">
+                          Sub-Category Name
+                          <c:choose>
+                            <c:when test="${sortBy == 'subCategoryName' && direction == 'asc'}"><i class="bi bi-arrow-up-short"></i></c:when>
+                            <c:when test="${sortBy == 'subCategoryName' && direction == 'desc'}"><i class="bi bi-arrow-down-short"></i></c:when>
+                            <c:otherwise><i class="bi bi-arrow-down-up" style="opacity:0.3;"></i></c:otherwise>
+                          </c:choose>
+                        </a>
+                      </th>
                       <th>Parent Category</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <c:forEach var="sc" items="${subCategoryList}" varStatus="st">
+                    <c:forEach var="sc" items="${subCategoryPage.content}" varStatus="st">
                       <tr>
-                        <td class="text-muted-color text-sm">${st.index + 1}</td>
+                        <td class="text-muted-color text-sm">${subCategoryPage.number * subCategoryPage.size + st.index + 1}</td>
                         <td>
                           <div class="d-flex align-items-center gap-3">
                             <div class="vendor-initial" style="background:var(--warning-50);color:var(--warning-600);">
@@ -92,22 +109,11 @@
                             </div>
                           </div>
                         </td>
-                        <td>
-                          <span class="badge badge-primary">
-						    ${categoryMap[sc.categoryId]}
-						  </span>
-                        </td>
+                        <td><span class="badge badge-primary">${categoryMap[sc.categoryId]}</span></td>
                         <td class="text-center">
                           <div class="action-btns">
-                            <a href="${pageContext.request.contextPath}/editsubcategory?subCategoryId=${sc.subCategoryId}"
-                               class="btn-icon edit" title="Edit">
-                              <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="${pageContext.request.contextPath}/deletesubcategory?subCategoryId=${sc.subCategoryId}"
-                               class="btn-icon del" title="Delete"
-                               onclick="return confirmDelete('${sc.subCategoryName}')">
-                              <i class="bi bi-trash"></i>
-                            </a>
+                            <a href="${pageContext.request.contextPath}/editsubcategory?subCategoryId=${sc.subCategoryId}" class="btn-icon edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                            <a href="${pageContext.request.contextPath}/deletesubcategory?subCategoryId=${sc.subCategoryId}" class="btn-icon del" title="Delete" onclick="return confirmDelete('${sc.subCategoryName}')"><i class="bi bi-trash"></i></a>
                           </div>
                         </td>
                       </tr>
@@ -116,18 +122,33 @@
                 </table>
               </div>
               <div class="d-flex align-items-center justify-content-between px-5 py-3" style="border-top:1px solid var(--border-color);">
-                <span class="text-sm text-muted-color">Showing ${subCategoryList.size()} sub-categor${subCategoryList.size() == 1 ? 'y' : 'ies'}</span>
-                <div class="pagination">
-                  <button class="page-btn" disabled><i class="bi bi-chevron-left"></i></button>
-                  <button class="page-btn active">1</button>
-                  <button class="page-btn" disabled><i class="bi bi-chevron-right"></i></button>
-                </div>
+                <span class="text-sm text-muted-color">
+                  Showing ${subCategoryPage.number * subCategoryPage.size + 1}–${subCategoryPage.number * subCategoryPage.size + subCategoryPage.numberOfElements}
+                  of ${subCategoryPage.totalElements} sub-categor${subCategoryPage.totalElements == 1 ? 'y' : 'ies'}
+                  <c:if test="${not empty keyword}"> for "<strong>${keyword}</strong>"</c:if>
+                </span>
+                <c:if test="${subCategoryPage.totalPages > 1}">
+                  <div class="pagination">
+                    <c:choose>
+                      <c:when test="${subCategoryPage.first}"><button class="page-btn" disabled><i class="bi bi-chevron-left"></i></button></c:when>
+                      <c:otherwise><a href="${baseUrl}&sortBy=${sortBy}&direction=${direction}&page=${subCategoryPage.number - 1}" class="page-btn"><i class="bi bi-chevron-left"></i></a></c:otherwise>
+                    </c:choose>
+                    <c:set var="startPage" value="${subCategoryPage.number > 2 ? subCategoryPage.number - 2 : 0}"/>
+                    <c:set var="endPage"   value="${subCategoryPage.number + 2 < subCategoryPage.totalPages ? subCategoryPage.number + 2 : subCategoryPage.totalPages - 1}"/>
+                    <c:forEach begin="${startPage}" end="${endPage}" var="p">
+                      <a href="${baseUrl}&sortBy=${sortBy}&direction=${direction}&page=${p}" class="page-btn ${p == subCategoryPage.number ? 'active' : ''}">${p + 1}</a>
+                    </c:forEach>
+                    <c:choose>
+                      <c:when test="${subCategoryPage.last}"><button class="page-btn" disabled><i class="bi bi-chevron-right"></i></button></c:when>
+                      <c:otherwise><a href="${baseUrl}&sortBy=${sortBy}&direction=${direction}&page=${subCategoryPage.number + 1}" class="page-btn"><i class="bi bi-chevron-right"></i></a></c:otherwise>
+                    </c:choose>
+                  </div>
+                </c:if>
               </div>
             </c:otherwise>
           </c:choose>
         </div>
       </div>
-
     </main>
     <jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
   </div>
@@ -137,14 +158,7 @@
 <script src="${pageContext.request.contextPath}/js/sidebar.js"></script>
 <script src="${pageContext.request.contextPath}/js/theme-switcher.js"></script>
 <script>
-function filterTable(q, id) {
-  document.querySelectorAll('#'+id+' tbody tr').forEach(r => {
-    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
-  });
-}
-function confirmDelete(name) {
-  return confirm('Delete sub-category "' + name + '"? This cannot be undone.');
-}
+function confirmDelete(name) { return confirm('Delete sub-category "' + name + '"? This cannot be undone.'); }
 </script>
 </body>
 </html>

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +28,14 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
 	
 	@Query("SELECT SUM(e.amount) FROM ExpenseEntity e WHERE e.userId = :userId")
     BigDecimal sumByUserId(@Param("userId") Integer userId);
+
+	@Query("SELECT SUM(e.amount) FROM ExpenseEntity e")
+	BigDecimal sumAll();
 	
 	List<ExpenseEntity> findTop9ByUserIdOrderByExpenseDateDesc(Integer userId);
+
+	// Paginated queries
+	Page<ExpenseEntity> findByUserId(Integer userId, Pageable pageable);
+	Page<ExpenseEntity> findByUserIdAndDescriptionContainingIgnoreCase(Integer userId, String keyword, Pageable pageable);
+	Page<ExpenseEntity> findByDescriptionContainingIgnoreCase(String keyword, Pageable pageable);
 }
