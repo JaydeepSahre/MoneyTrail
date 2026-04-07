@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -104,16 +108,34 @@ public class ExpenseController {
      * - totalExpenseAmount  → BigDecimal
      */
     @GetMapping("/listexpense")
-    public String listExpenses(HttpSession session, Model model) {
+    public String listExpenses(
+            @RequestParam(defaultValue = "0")           int    page,
+            @RequestParam(defaultValue = "10")          int    size,
+            @RequestParam(defaultValue = "")            String keyword,
+            @RequestParam(defaultValue = "expenseDate") String sortBy,
+            @RequestParam(defaultValue = "desc")        String direction,
+            HttpSession session, Model model) {
         UserEntity user = requireLogin(session);
         if (user == null) return "redirect:/login";
 
         boolean isAdmin = "Admin".equals(user.getRole());
 
-        // ── Fetch expense list — user-scoped unless Admin ─────────────────────
-        List<ExpenseEntity> expenseList = isAdmin
-                ? expenseRepository.findAll()
-                : expenseRepository.findByUserId(user.getUserId());
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // ── Fetch paginated expense list — user-scoped unless Admin ───────────
+        Page<ExpenseEntity> expensePage;
+        if (keyword != null && !keyword.isBlank()) {
+            expensePage = isAdmin
+                    ? expenseRepository.findByDescriptionContainingIgnoreCase(keyword, pageable)
+                    : expenseRepository.findByUserIdAndDescriptionContainingIgnoreCase(user.getUserId(), keyword, pageable);
+        } else {
+            expensePage = isAdmin
+                    ? expenseRepository.findAll(pageable)
+                    : expenseRepository.findByUserId(user.getUserId(), pageable);
+        }
 
         // ── Reference data for lookup maps ────────────────────────────────────
         List<CategoryEntity>    categories    = categoryRepository.findAll();
@@ -133,20 +155,22 @@ public class ExpenseController {
         Map<Integer, String> accountMap     = toNameMap(accounts,      AccountEntity::getAccountId,         AccountEntity::getAccountName);
         Map<Integer, String> statusMap      = toNameMap(statuses,      StatusEntity::getStatusId,           StatusEntity::getStatusName);
 
-        // ── Running total ─────────────────────────────────────────────────────
-        BigDecimal totalExpenseAmount = expenseList.stream()
-                .map(ExpenseEntity::getAmount)
-                .filter(java.util.Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // ── Grand total (all records, not filtered) ────────────────────────────
+        BigDecimal totalExpenseAmount = isAdmin
+                ? java.util.Optional.ofNullable(expenseRepository.sumAll()).orElse(BigDecimal.ZERO)
+                : java.util.Optional.ofNullable(expenseRepository.sumByUserId(user.getUserId())).orElse(BigDecimal.ZERO);
 
         // ── Bind model ────────────────────────────────────────────────────────
-        model.addAttribute("expenseList",        expenseList);
+        model.addAttribute("expensePage",        expensePage);
         model.addAttribute("categoryMap",        categoryMap);
         model.addAttribute("subCategoryMap",     subCategoryMap);
         model.addAttribute("vendorMap",          vendorMap);
         model.addAttribute("accountMap",         accountMap);
         model.addAttribute("statusMap",          statusMap);
         model.addAttribute("totalExpenseAmount", totalExpenseAmount);
+        model.addAttribute("keyword",            keyword);
+        model.addAttribute("sortBy",             sortBy);
+        model.addAttribute("direction",          direction);
         model.addAttribute("activeMenu",         "expense");
 
         return "pages/expense/ListExpense";

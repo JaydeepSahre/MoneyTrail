@@ -5,6 +5,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,10 +57,31 @@ public class CategoryController {
 
  
     @GetMapping("/listcategory")
-    public String listCategories(HttpSession session, Model model) {
+    public String listCategories(
+            @RequestParam(defaultValue = "0")            int    page,
+            @RequestParam(defaultValue = "10")           int    size,
+            @RequestParam(defaultValue = "")             String keyword,
+            @RequestParam(defaultValue = "categoryName") String sortBy,
+            @RequestParam(defaultValue = "asc")          String direction,
+            HttpSession session, Model model) {
         if (requireLogin(session) == null) return "redirect:/login";
 
-        model.addAttribute("categoryList", categoryRepository.findAll());
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<CategoryEntity> categoryPage;
+        if (keyword != null && !keyword.isBlank()) {
+            categoryPage = categoryRepository.findByCategoryNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            categoryPage = categoryRepository.findAll(pageable);
+        }
+
+        model.addAttribute("categoryPage", categoryPage);
+        model.addAttribute("keyword",      keyword);
+        model.addAttribute("sortBy",       sortBy);
+        model.addAttribute("direction",    direction);
         model.addAttribute("activeMenu",   "category");
         return "pages/category/ListCategory";
     }
@@ -162,11 +187,28 @@ public class CategoryController {
      * - categoryMap     → Map<Integer, String>  (id → name for fast JSP lookup)
      */
     @GetMapping("/listsubcategory")
-    public String listSubCategories(HttpSession session, Model model) {
+    public String listSubCategories(
+            @RequestParam(defaultValue = "0")               int    page,
+            @RequestParam(defaultValue = "10")              int    size,
+            @RequestParam(defaultValue = "")                String keyword,
+            @RequestParam(defaultValue = "subCategoryName") String sortBy,
+            @RequestParam(defaultValue = "asc")             String direction,
+            HttpSession session, Model model) {
         if (requireLogin(session) == null) return "redirect:/login";
 
-        List<SubCategoryEntity> subCategoryList = subCategoryRepository.findAll();
-        List<CategoryEntity>    categories       = categoryRepository.findAll();
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<SubCategoryEntity> subCategoryPage;
+        if (keyword != null && !keyword.isBlank()) {
+            subCategoryPage = subCategoryRepository.findBySubCategoryNameContainingIgnoreCase(keyword, pageable);
+        } else {
+            subCategoryPage = subCategoryRepository.findAll(pageable);
+        }
+
+        List<CategoryEntity> categories = categoryRepository.findAll();
 
         // Build lookup map — avoids nested loops / extra queries in JSP
         Map<Integer, String> categoryMap = categories.stream()
@@ -175,8 +217,11 @@ public class CategoryController {
                         CategoryEntity::getCategoryName,
                         (a, b) -> a));
 
-        model.addAttribute("subCategoryList", subCategoryList);
+        model.addAttribute("subCategoryPage", subCategoryPage);
         model.addAttribute("categoryMap",     categoryMap);
+        model.addAttribute("keyword",         keyword);
+        model.addAttribute("sortBy",          sortBy);
+        model.addAttribute("direction",       direction);
         model.addAttribute("activeMenu",      "subcategory");
 
         return "pages/category/ListSubCategory";

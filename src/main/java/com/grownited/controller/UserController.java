@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -211,13 +215,34 @@ public class UserController {
      * - userList → List<UserEntity>
      */
     @GetMapping("/listuser")
-    public String listUsers(HttpSession session, Model model) {
+    public String listUsers(
+            @RequestParam(defaultValue = "0")         int    page,
+            @RequestParam(defaultValue = "10")        int    size,
+            @RequestParam(defaultValue = "")          String keyword,
+            @RequestParam(defaultValue = "firstName") String sortBy,
+            @RequestParam(defaultValue = "asc")       String direction,
+            HttpSession session, Model model) {
         UserEntity user = requireLogin(session);
         if (user == null) return "redirect:/login";
         if (!"Admin".equals(user.getRole())) return "redirect:/customer-dashboard";
 
-        List<UserEntity> userList = userRepository.findAll();
-        model.addAttribute("userList",   userList);
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<UserEntity> userPage;
+        if (keyword != null && !keyword.isBlank()) {
+            userPage = userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                    keyword, keyword, keyword, pageable);
+        } else {
+            userPage = userRepository.findAll(pageable);
+        }
+
+        model.addAttribute("userPage",   userPage);
+        model.addAttribute("keyword",    keyword);
+        model.addAttribute("sortBy",     sortBy);
+        model.addAttribute("direction",  direction);
         model.addAttribute("activeMenu", "users");
         model.addAttribute("pageTitle",  "Users");
 

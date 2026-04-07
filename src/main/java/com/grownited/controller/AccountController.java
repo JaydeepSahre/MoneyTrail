@@ -3,6 +3,10 @@ package com.grownited.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,16 +56,39 @@ public class AccountController {
 
 
     @GetMapping("/listaccount")
-    public String listAccounts(HttpSession session, Model model) {
+    public String listAccounts(
+            @RequestParam(defaultValue = "0")            int    page,
+            @RequestParam(defaultValue = "10")           int    size,
+            @RequestParam(defaultValue = "")             String keyword,
+            @RequestParam(defaultValue = "accountName")  String sortBy,
+            @RequestParam(defaultValue = "asc")          String direction,
+            HttpSession session, Model model) {
+
         UserEntity user = requireLogin(session);
         if (user == null) return "redirect:/login";
 
-        boolean isAdmin = "Admin".equals(user.getRole());
-        List<AccountEntity> accountList = isAdmin
-                ? accountRepository.findAll()
-                : accountRepository.findByUserId(user.getUserId());
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        model.addAttribute("accountList", accountList);
+        boolean isAdmin = "Admin".equals(user.getRole());
+        Page<AccountEntity> accountPage;
+
+        if (keyword != null && !keyword.isBlank()) {
+            accountPage = isAdmin
+                    ? accountRepository.findByAccountNameContainingIgnoreCase(keyword, pageable)
+                    : accountRepository.findByUserIdAndAccountNameContainingIgnoreCase(user.getUserId(), keyword, pageable);
+        } else {
+            accountPage = isAdmin
+                    ? accountRepository.findAll(pageable)
+                    : accountRepository.findByUserId(user.getUserId(), pageable);
+        }
+
+        model.addAttribute("accountPage", accountPage);
+        model.addAttribute("keyword",     keyword);
+        model.addAttribute("sortBy",      sortBy);
+        model.addAttribute("direction",   direction);
         model.addAttribute("activeMenu",  "account");
 
         return "pages/account/ListAccount";
