@@ -39,20 +39,6 @@
   <!-- Right Actions -->
   <div class="header-actions">
 
-    <!-- Period -->
-    <button class="header-period" type="button" aria-label="Select period">
-      <i class="bi bi-calendar3" style="font-size:13px;"></i>
-      <span><fmt:formatDate value="${selectedMonth}" pattern="MMM yyyy" var="fmtMonth"/>${not empty fmtMonth ? fmtMonth : 'This Month'}</span>
-    </button>
-
-    <!-- Notifications -->
-    <a href="${pageContext.request.contextPath}/notifications" class="header-btn" aria-label="Notifications" title="Notifications">
-      <i class="bi bi-bell-fill" style="font-size:15px;"></i>
-      <c:if test="${not empty unreadCount and unreadCount > 0}">
-        <span class="header-btn-badge" aria-label="${unreadCount} notifications"></span>
-      </c:if>
-    </a>
-
     <!-- Theme Toggle -->
     <button class="header-btn" id="themeToggle" data-theme-toggle>
 	  <i class="bi bi-sun-fill"  data-icon="sun"  style="display:none;"></i>

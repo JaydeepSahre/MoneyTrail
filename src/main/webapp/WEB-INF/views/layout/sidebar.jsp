@@ -77,15 +77,6 @@
         <span class="nav-label">Overview</span>
       </a>
 
-      <!-- BUDGET -->
-      <span class="sidebar-section-label">Budget</span>
-
-      <a href="${pageContext.request.contextPath}/budgets"
-         class="nav-item ${activeMenu == 'budget' ? 'active' : ''}">
-        <span class="nav-icon"><i class="bi bi-wallet2"></i></span>
-        <span class="nav-label">Budgets</span>
-      </a>
-
     </c:if>
 
 

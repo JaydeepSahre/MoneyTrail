@@ -19,42 +19,23 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cloudinary.Cloudinary;
 import com.grownited.entity.UserEntity;
+import com.grownited.repository.ExpenseRepository;
+import com.grownited.repository.IncomeRepository;
 import com.grownited.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 
-/**
- * User management — Profile, Settings, Admin user-list, Toggle active/inactive.
- *
- * Routes:
- *   GET  /profile                   → view/edit own profile
- *   POST /profile/update            → save profile changes
- *   POST /profile/change-password   → change password
- *   POST /profile/deactivate        → self-deactivate
- *   POST /profile/delete            → permanent self-delete
- *   GET  /settings                  → settings page
- *
- *   Admin only:
- *   GET  /listuser                  → all users
- *   GET  /viewuser                  → view single user
- *   GET  /deleteuser                → hard-delete user
- *   POST /toggleuser                → flip active flag
- */
 @Controller
 public class UserController {
 
     @Autowired private UserRepository  userRepository;
+    @Autowired private ExpenseRepository expenseRepository;
+    @Autowired private IncomeRepository  incomeRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private Cloudinary      cloudinary;
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PROFILE — VIEW
-    // ══════════════════════════════════════════════════════════════════════════
 
-    /**
-     * Shows the currently logged-in user's profile page.
-     * Always reads the freshest data from the DB (not just session).
-     */
     @GetMapping("/profile")
     public String viewProfile(HttpSession session, Model model) {
         UserEntity sessionUser = requireLogin(session);
@@ -71,15 +52,6 @@ public class UserController {
         return "pages/user/Profile";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PROFILE — UPDATE (personal info + optional photo)
-    // ══════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Saves profile changes:
-     * firstName, lastName, email, contactNum, birthYear, gender
-     * + optional new profile picture (uploaded to Cloudinary).
-     */
     @PostMapping("/profile/update")
     public String updateProfile(UserEntity updatedUser,
                                 @RequestParam(value = "profilePic", required = false)
@@ -122,10 +94,6 @@ public class UserController {
         return "redirect:/profile";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PROFILE — CHANGE PASSWORD
-    // ══════════════════════════════════════════════════════════════════════════
-
     @PostMapping("/profile/change-password")
     public String changePassword(@RequestParam String currentPassword,
                                  @RequestParam String newPassword,
@@ -158,9 +126,6 @@ public class UserController {
         return "redirect:/profile";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PROFILE — SELF DEACTIVATE
-    // ══════════════════════════════════════════════════════════════════════════
 
     @PostMapping("/profile/deactivate")
     public String deactivateProfile(HttpSession session, RedirectAttributes ra) {
@@ -177,9 +142,6 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PROFILE — SELF DELETE (permanent)
-    // ══════════════════════════════════════════════════════════════════════════
 
     @PostMapping("/profile/delete")
     public String deleteProfile(HttpSession session, RedirectAttributes ra) {
@@ -192,9 +154,6 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // SETTINGS PAGE
-    // ══════════════════════════════════════════════════════════════════════════
 
     @GetMapping("/settings")
     public String settings(HttpSession session, Model model) {
@@ -204,16 +163,7 @@ public class UserController {
         return "pages/user/Setting";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ADMIN — LIST ALL USERS
-    // ══════════════════════════════════════════════════════════════════════════
 
-    /**
-     * Admin-only: shows all platform users.
-     *
-     * Data provided to JSP:
-     * - userList → List<UserEntity>
-     */
     @GetMapping("/listuser")
     public String listUsers(
             @RequestParam(defaultValue = "0")         int    page,
@@ -249,9 +199,6 @@ public class UserController {
         return "pages/user/ListUser";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ADMIN — VIEW SINGLE USER
-    // ══════════════════════════════════════════════════════════════════════════
 
     @GetMapping("/viewuser")
     public String viewUser(@RequestParam Integer userId,
@@ -269,14 +216,6 @@ public class UserController {
         return "pages/user/ViewUser";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ADMIN — HARD DELETE USER
-    // ══════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Permanently deletes a user.
-     * Admin cannot delete themselves through this route.
-     */
     @GetMapping("/deleteuser")
     public String deleteUser(@RequestParam Integer userId,
                              HttpSession session,
@@ -302,14 +241,6 @@ public class UserController {
         return "redirect:/listuser";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // ADMIN — TOGGLE USER ACTIVE / INACTIVE
-    // ══════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Flips the active flag of any user.
-     * Used by the toggle button in ListUser.jsp and ViewUser.jsp.
-     */
     @PostMapping("/toggleuser")
     public String toggleUser(@RequestParam Integer userId,
                              HttpSession session,
@@ -335,11 +266,19 @@ public class UserController {
 
         return "redirect:/listuser";
     }
+    @Transactional
+    @PostMapping("/profile/clear-transactions")
+    public String clearTransactions(HttpSession session, RedirectAttributes ra) {
+        UserEntity user = requireLogin(session);
+        if (user == null) return "redirect:/login";
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // PRIVATE HELPER
-    // ══════════════════════════════════════════════════════════════════════════
+        expenseRepository.deleteAllByUserId(user.getUserId());
+        incomeRepository.deleteAllByUserId(user.getUserId());
 
+        ra.addFlashAttribute("success", "All transactions have been cleared from your profile.");
+        return "redirect:/profile";
+    }
+    
     private UserEntity requireLogin(HttpSession session) {
         return (UserEntity) session.getAttribute("user");
     }

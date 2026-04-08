@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.grownited.entity.ExpenseEntity;
+import com.grownited.entity.UserEntity;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer> {
@@ -38,4 +41,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer>
 	Page<ExpenseEntity> findByUserId(Integer userId, Pageable pageable);
 	Page<ExpenseEntity> findByUserIdAndDescriptionContainingIgnoreCase(Integer userId, String keyword, Pageable pageable);
 	Page<ExpenseEntity> findByDescriptionContainingIgnoreCase(String keyword, Pageable pageable);
+	
+	@Transactional
+	void deleteAllByUserId(Integer userId);
 }

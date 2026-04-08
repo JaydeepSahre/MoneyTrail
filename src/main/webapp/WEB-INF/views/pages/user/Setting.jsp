@@ -113,9 +113,6 @@
               <button class="settings-nav-item active" onclick="showSection('appearance', this)">
                 <i class="bi bi-palette"></i> Appearance
               </button>
-              <button class="settings-nav-item" onclick="showSection('notifications', this)">
-                <i class="bi bi-bell"></i> Notifications
-              </button>
               <button class="settings-nav-item" onclick="showSection('danger', this)">
                 <i class="bi bi-exclamation-triangle" style="color:var(--danger-500);"></i>
                 <span style="color:var(--danger-500);">Danger Zone</span>
@@ -146,146 +143,52 @@
                   <div class="theme-tiles">
 
                     <!-- Light -->
-                    <label class="theme-tile ${not empty theme and theme == 'light' ? 'selected' : ''}" id="tile-light">
-                      <input type="radio" name="themeChoice" value="light" style="display:none;"
-                             ${not empty theme and theme == 'light' ? 'checked' : ''}
-                             onchange="applyTheme('light')">
-                      <div class="theme-tile-preview" style="background:#f8f9fa;">
-                        <div class="theme-tile-bar" style="background:#dee2e6;width:100%;"></div>
-                        <div class="theme-tile-bar" style="background:#adb5bd;width:70%;"></div>
-                        <div class="theme-tile-bar" style="background:#ced4da;width:50%;"></div>
-                      </div>
-                      <div class="theme-tile-label">Light</div>
-                    </label>
+<label class="theme-tile ${not empty theme and theme == 'light' ? 'selected' : ''}" id="tile-light"
+       onclick="applyTheme('light')">
+  <input type="radio" name="themeChoice" value="light" style="display:none;"
+         ${not empty theme and theme == 'light' ? 'checked' : ''}>
+  <div class="theme-tile-preview" style="background:#f8f9fa;">
+    <div class="theme-tile-bar" style="background:#dee2e6;width:100%;"></div>
+    <div class="theme-tile-bar" style="background:#adb5bd;width:70%;"></div>
+    <div class="theme-tile-bar" style="background:#ced4da;width:50%;"></div>
+  </div>
+  <div class="theme-tile-label">Light</div>
+</label>
 
-                    <!-- Dark -->
-                    <label class="theme-tile ${empty theme or theme == 'dark' ? 'selected' : ''}" id="tile-dark">
-                      <input type="radio" name="themeChoice" value="dark" style="display:none;"
-                             ${empty theme or theme == 'dark' ? 'checked' : ''}
-                             onchange="applyTheme('dark')">
-                      <div class="theme-tile-preview" style="background:#1a1d23;">
-                        <div class="theme-tile-bar" style="background:#2d3139;width:100%;"></div>
-                        <div class="theme-tile-bar" style="background:#3d4149;width:70%;"></div>
-                        <div class="theme-tile-bar" style="background:#2d3139;width:50%;"></div>
-                      </div>
-                      <div class="theme-tile-label">Dark</div>
-                    </label>
+<!-- Dark -->
+<label class="theme-tile ${empty theme or theme == 'dark' ? 'selected' : ''}" id="tile-dark"
+       onclick="applyTheme('dark')">
+  <input type="radio" name="themeChoice" value="dark" style="display:none;"
+         ${empty theme or theme == 'dark' ? 'checked' : ''}>
+  <div class="theme-tile-preview" style="background:#1a1d23;">
+    <div class="theme-tile-bar" style="background:#2d3139;width:100%;"></div>
+    <div class="theme-tile-bar" style="background:#3d4149;width:70%;"></div>
+    <div class="theme-tile-bar" style="background:#2d3139;width:50%;"></div>
+  </div>
+  <div class="theme-tile-label">Dark</div>
+</label>
 
-                    <!-- System -->
-                    <label class="theme-tile ${not empty theme and theme == 'system' ? 'selected' : ''}" id="tile-system">
-                      <input type="radio" name="themeChoice" value="system" style="display:none;"
-                             ${not empty theme and theme == 'system' ? 'checked' : ''}
-                             onchange="applyTheme('system')">
-                      <div class="theme-tile-preview" style="background:linear-gradient(135deg,#f8f9fa 50%,#1a1d23 50%);">
-                        <div class="theme-tile-bar" style="background:rgba(100,100,100,0.3);width:100%;"></div>
-                        <div class="theme-tile-bar" style="background:rgba(100,100,100,0.2);width:70%;"></div>
-                        <div class="theme-tile-bar" style="background:rgba(100,100,100,0.3);width:50%;"></div>
-                      </div>
-                      <div class="theme-tile-label">System</div>
-                    </label>
+<!-- System -->
+<label class="theme-tile ${not empty theme and theme == 'system' ? 'selected' : ''}" id="tile-system"
+       onclick="applyTheme('system')">
+  <input type="radio" name="themeChoice" value="system" style="display:none;"
+         ${not empty theme and theme == 'system' ? 'checked' : ''}>
+  <div class="theme-tile-preview" style="background:linear-gradient(135deg,#f8f9fa 50%,#1a1d23 50%);">
+    <div class="theme-tile-bar" style="background:rgba(100,100,100,0.3);width:100%;"></div>
+    <div class="theme-tile-bar" style="background:rgba(100,100,100,0.2);width:70%;"></div>
+    <div class="theme-tile-bar" style="background:rgba(100,100,100,0.3);width:50%;"></div>
+  </div>
+  <div class="theme-tile-label">System</div>
+</label>
 
                   </div>
                 </div>
-
-                <!-- Compact Mode -->
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Compact Mode</div>
-                    <div class="setting-row-desc">Reduce spacing for a denser layout</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="compactMode" onchange="savePref('compactMode', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <!-- Sidebar collapsed by default -->
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Collapse Sidebar by Default</div>
-                    <div class="setting-row-desc">Start with the sidebar minimized on every page load</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="sidebarCollapsed" onchange="savePref('sidebarCollapsed', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- ========================
-               2. NOTIFICATIONS
-          ======================== -->
-          <div class="settings-section" id="section-notifications">
-            <div class="card">
-              <div class="card-header">
-                <div class="card-title"><i class="bi bi-bell" style="color:var(--accent-500);"></i> Notifications</div>
-              </div>
-              <div class="card-body" style="padding:var(--sp-6);">
-
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Email Notifications</div>
-                    <div class="setting-row-desc">Receive activity summaries and alerts via email</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="emailNotif" checked onchange="savePref('emailNotif', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Weekly Summary Report</div>
-                    <div class="setting-row-desc">Get a weekly breakdown of your spending every Monday</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="weeklyReport" checked onchange="savePref('weeklyReport', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Budget Limit Alerts</div>
-                    <div class="setting-row-desc">Notify when you're close to or over your budget</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="budgetAlert" checked onchange="savePref('budgetAlert', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">New Transaction Added</div>
-                    <div class="setting-row-desc">Get notified whenever a new transaction is recorded</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="txnNotif" onchange="savePref('txnNotif', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-row">
-                  <div class="setting-row-info">
-                    <div class="setting-row-label">Security Alerts</div>
-                    <div class="setting-row-desc">Get notified about password changes and new logins</div>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="securityAlert" checked onchange="savePref('securityAlert', this.checked)">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
               </div>
             </div>
           </div>
 
 		<!-- ========================
-               4. DANGER ZONE
+               2. DANGER ZONE
           ======================== -->
           <div class="settings-section" id="section-danger">
             <div class="card" style="border:1px solid var(--danger-200, #fca5a5);">
@@ -382,22 +285,65 @@
     if (el) el.classList.add('active');
   }
 
-  // ── Theme switcher ────────────────────────────────────────────
-  function applyTheme(value) {
-    var allowed = ['light', 'dark', 'system'];
-    if (allowed.indexOf(value) === -1) value = 'dark';
+  function applyTheme(theme) {
+	  const html = document.documentElement;
+	  const sunIcon  = document.querySelector('[data-icon="sun"]');
+	  const moonIcon = document.querySelector('[data-icon="moon"]');
 
-    var effective = value;
-    if (value === 'system') {
-      effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    document.documentElement.setAttribute('data-theme', effective);
-    localStorage.setItem('mt_theme', value);
+	  // Resolve effective theme for 'system'
+	  let effectiveDark;
+	  if (theme === 'system') {
+	    effectiveDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	  } else {
+	    effectiveDark = (theme === 'dark');
+	  }
 
-    document.querySelectorAll('.theme-tile').forEach(function (t) { t.classList.remove('selected'); });
-    var selectedTile = document.getElementById('tile-' + value);
-    if (selectedTile) selectedTile.classList.add('selected');
-  }
+	  // Apply dark class (same as toggle button does)
+	  if (effectiveDark) {
+	    html.classList.add('dark');
+	  } else {
+	    html.classList.remove('dark');
+	  }
+
+	  // Sync toggle button icons (same logic as the toggle button)
+	  if (sunIcon && moonIcon) {
+	    sunIcon.style.display  = effectiveDark ? 'inline-block' : 'none';
+	    moonIcon.style.display = effectiveDark ? 'none' : 'inline-block';
+	  }
+
+	  // Update selected tile highlight
+	  document.querySelectorAll('.theme-tile').forEach(t => t.classList.remove('selected'));
+	  const activeTile = document.getElementById('tile-' + theme);
+	  if (activeTile) {
+	    activeTile.classList.add('selected');
+	    activeTile.querySelector('input[type="radio"]').checked = true;
+	  }
+
+	  // Persist to localStorage (same as toggle button saves state)
+	  localStorage.setItem('theme', theme);
+	}
+
+	// On page load — restore saved theme and keep toggle button in sync
+	(function () {
+	  const saved = localStorage.getItem('theme') || '${not empty theme ? theme : "dark"}';
+	  applyTheme(saved);
+
+	  // Keep toggle button working the same way — clicking it cycles dark ↔ light
+	  const toggleBtn = document.getElementById('themeToggle');
+	  if (toggleBtn) {
+	    toggleBtn.addEventListener('click', function () {
+	      const isDark = document.documentElement.classList.contains('dark');
+	      applyTheme(isDark ? 'light' : 'dark');
+	    });
+	  }
+
+	  // React to system preference changes when 'system' is active
+	  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+	    if (localStorage.getItem('theme') === 'system') {
+	      applyTheme('system');
+	    }
+	  });
+	})();
 
   // ── Generic preference saver (localStorage) ───────────────────
   function savePref(key, value) {
