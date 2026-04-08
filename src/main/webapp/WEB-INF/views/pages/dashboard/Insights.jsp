@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/forms.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/insights.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -54,6 +56,57 @@
           </div>
         </div>
       </div>
+		
+		<div class="report-card">
+		  <p class="report-card__title">
+		    <%-- PDF icon --%>
+		    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e11d48"
+		         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+		      <polyline points="14 2 14 8 20 8"/>
+		      <line x1="9" y1="13" x2="15" y2="13"/>
+		      <line x1="9" y1="17" x2="15" y2="17"/>
+		      <line x1="12" y1="9"  x2="12" y2="9"/>
+		    </svg>
+		    Download Transactions Report
+		  </p>
+		  <p class="report-card__subtitle">Export a date-wise PDF of all income and expenses.</p>
+		
+		  <form id="reportForm"
+		        action="${pageContext.request.contextPath}/reports/transactions/pdf"
+		        method="get"
+		        onsubmit="return validateReportForm()">
+		
+		    <div class="report-card__fields">
+		
+		      <div class="report-card__field">
+		        <label class="report-card__label" for="fromDate">From</label>
+		        <input class="report-card__input" type="date" id="fromDate" name="from" required
+		               max="${today}" />
+		      </div>
+		
+		      <div class="report-card__field">
+		        <label class="report-card__label" for="toDate">To</label>
+		        <input class="report-card__input" type="date" id="toDate" name="to" required
+		               max="${today}" />
+		      </div>
+		
+		      <button class="report-card__btn" type="submit">
+		        <%-- Download arrow icon --%>
+		        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+		             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+		          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+		          <polyline points="7 10 12 15 17 10"/>
+		          <line x1="12" y1="15" x2="12" y2="3"/>
+		        </svg>
+		        Export PDF
+		      </button>
+		
+		    </div>
+		
+		    <p class="report-card__error" id="reportFormError"></p>
+		  </form>
+		</div>
 
       <%-- =========================================
            KPI STRIP — 4 summary cards
@@ -73,7 +126,7 @@
             <div class="kpi-sub">${not empty incomeCount ? incomeCount : 0} transactions</div>
           </div>
         </div>
-
+		
         <!-- Total Expense -->
         <div class="kpi-card" style="border-left:3px solid var(--expense-color);">
           <div class="kpi-icon" style="background:var(--danger-50);color:var(--expense-color);">
@@ -461,156 +514,80 @@
 (function () {
   'use strict';
 
-  /* ── Theme-aware colours ───────────────────────── */
-  const root   = document.documentElement;
+  // Theme configuration
+  const root = document.documentElement;
   const isDark = root.getAttribute('data-theme') === 'dark';
-
-  const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-  const tickColor  = isDark ? '#64748b'                : '#94a3b8';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const tickColor = isDark ? '#64748b' : '#94a3b8';
   const fontFamily = getComputedStyle(root).getPropertyValue('--font-sans').trim() || 'DM Sans, sans-serif';
 
-  Chart.defaults.font.family  = fontFamily;
-  Chart.defaults.font.size    = 12;
-  Chart.defaults.color        = tickColor;
+  // Apply global chart defaults
+  Chart.defaults.font.family = fontFamily;
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = tickColor;
   Chart.defaults.plugins.legend.labels.boxWidth = 10;
-  Chart.defaults.plugins.legend.labels.padding  = 14;
+  Chart.defaults.plugins.legend.labels.padding = 14;
 
-  /* ── Colour palettes ──────────────────────────── */
-  const EXPENSE_PALETTE = [
-    '#ef4444','#f97316','#eab308','#8b5cf6',
-    '#06b6d4','#ec4899','#14b8a6','#f59e0b'
-  ];
-  const INCOME_PALETTE = [
-    '#12b383','#22c55e','#4ade80','#86efac',
-    '#6ee7b7','#a7f3d0'
-  ];
-  const MODE_PALETTE = [
-    '#6366f1','#f59e0b','#12b383','#ef4444',
-    '#0ea5e9','#8b5cf6','#ec4899'
-  ];
+  // Color palettes
+  const EXPENSE_PALETTE = ['#ef4444', '#f97316', '#eab308', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6', '#f59e0b'];
+  const INCOME_PALETTE = ['#12b383', '#22c55e', '#4ade80', '#86efac', '#6ee7b7', '#a7f3d0'];
+  const MODE_PALETTE = ['#6366f1', '#f59e0b', '#12b383', '#ef4444', '#0ea5e9', '#8b5cf6', '#ec4899'];
 
-  /* ─────────────────────────────────────────────
-     Helper: parse JSTL-rendered JS arrays
-  ───────────────────────────────────────────── */
+  // Extract data from server-rendered JSTL variables
+  const expLabels = [<c:forEach var="e" items="${categoryTotals}" varStatus="s">"${e.key}"<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const expValues = [<c:forEach var="e" items="${categoryTotals}" varStatus="s">${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const incLabels = [<c:forEach var="e" items="${incomeTotals}" varStatus="s">"${e.key}"<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const incValues = [<c:forEach var="e" items="${incomeTotals}" varStatus="s">${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const monthLabels = [<c:forEach var="m" items="${monthLabels}" varStatus="s">"${m}"<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const monthIncome = [<c:forEach var="v" items="${monthIncomeData}" varStatus="s">${v}<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const monthExpense = [<c:forEach var="v" items="${monthExpenseData}" varStatus="s">${v}<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const modeLabels = [<c:forEach var="e" items="${paymentModeTotals}" varStatus="s">"${e.key}"<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const modeValues = [<c:forEach var="e" items="${paymentModeTotals}" varStatus="s">${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const trendLabels = [<c:forEach var="l" items="${balanceTrendLabels}" varStatus="s">"${l}"<c:if test="${!s.last}">,</c:if></c:forEach>];
+  const trendValues = [<c:forEach var="v" items="${balanceTrendValues}" varStatus="s">${v}<c:if test="${!s.last}">,</c:if></c:forEach>];
 
-  /* 1. EXPENSE by Category Pie */
-  const expLabels = [
-    <c:forEach var="e" items="${categoryTotals}" varStatus="s">
-      "${e.key}"<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const expValues = [
-    <c:forEach var="e" items="${categoryTotals}" varStatus="s">
-    ${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-
-  /* 2. INCOME by Source Pie */
-  const incLabels = [
-    <c:forEach var="e" items="${incomeTotals}" varStatus="s">
-      "${e.key}"<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const incValues = [
-    <c:forEach var="e" items="${incomeTotals}" varStatus="s">
-    ${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-
-  /* 3. Monthly Income vs Expense Bar */
-  const monthLabels = [
-    <c:forEach var="m" items="${monthLabels}" varStatus="s">
-      "${m}"<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const monthIncome = [
-    <c:forEach var="v" items="${monthIncomeData}" varStatus="s">
-      ${v}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const monthExpense = [
-    <c:forEach var="v" items="${monthExpenseData}" varStatus="s">
-      ${v}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-
-  /* 4. Balance Trend Line */
-  const trendLabels = [
-    <c:forEach var="l" items="${balanceTrendLabels}" varStatus="s">
-      "${l}"<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const trendValues = [
-    <c:forEach var="v" items="${balanceTrendValues}" varStatus="s">
-      ${v}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-
-  /* 5. Payment Mode Pie */
-  const modeLabels = [
-    <c:forEach var="e" items="${paymentModeTotals}" varStatus="s">
-      "${e.key}"<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-  const modeValues = [
-    <c:forEach var="e" items="${paymentModeTotals}" varStatus="s">
-    ${e.value.doubleValue()}<c:if test="${!s.last}">,</c:if>
-    </c:forEach>
-  ];
-
-  /* ─────────────────────────────────────────────
-     Savings Rate — raw numbers from server
-  ───────────────────────────────────────────── */
-  const totalIncome  = parseFloat("${not empty totalIncome  ? totalIncome  : 0}") || 0;
+  // Raw metrics from server
+  const totalIncome = parseFloat("${not empty totalIncome ? totalIncome : 0}") || 0;
   const totalExpense = parseFloat("${not empty totalExpense ? totalExpense : 0}") || 0;
-  const savingsRate  = totalIncome > 0
-    ? Math.min(100, Math.max(0, ((totalIncome - totalExpense) / totalIncome) * 100))
-    : 0;
+  const balance = parseFloat("${not empty balance ? balance : 0}") || 0;
+  const savingsRate = totalIncome > 0 ? Math.min(100, Math.max(0, ((totalIncome - totalExpense) / totalIncome) * 100)) : 0;
 
-  /* ─────────────────────────────────────────────
-     Shared chart options helpers
-  ───────────────────────────────────────────── */
-  function pieOptions(title) {
-    return {
-      responsive: true,
-      cutout: '0%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-        	  label: function(ctx) {
-        		  const label = ctx.label || ctx.dataset.label || '';
-        		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-        		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-        		}
-          }
+  // Universal tooltip formatter
+  const formatTooltip = (ctx) => {
+    const label = ctx.label || ctx.dataset.label || '';
+    const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
+    return `${label}: ₹${value.toLocaleString('en-IN')}`;
+  };
+
+  // Universal axis formatter
+  const formatAxis = (v) => v >= 1000 ? '₹' + (v / 1000).toFixed(0) + 'K' : '₹' + v;
+
+  // ─── 1. SUMMARY OVERVIEW DOUGHNUT ───
+  if (document.getElementById('summaryChart')) {
+    new Chart(document.getElementById('summaryChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Income', 'Expenses', 'Savings'],
+        datasets: [{
+          data: [totalIncome, totalExpense, balance],
+          backgroundColor: ['#12b383', '#ef4444', '#6366f1'],
+          borderWidth: 2,
+          borderColor: isDark ? '#111827' : '#ffffff',
+          hoverBorderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true } },
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
         }
       }
-    };
+    });
   }
 
-  function doughnutOptions() {
-    return {
-      responsive: true,
-      cutout: '72%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-        	  label: function(ctx) {
-        		  const label = ctx.label || ctx.dataset.label || '';
-        		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-        		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-        		}
-          }
-        }
-      }
-    };
-  }
-
-  /* ─────────────────────────────────────────────
-     1. EXPENSE CATEGORY PIE
-  ───────────────────────────────────────────── */
+  // ─── 2. EXPENSE CATEGORY PIE ───
   if (expLabels.length && document.getElementById('expensePie')) {
     new Chart(document.getElementById('expensePie'), {
       type: 'doughnut',
@@ -624,13 +601,18 @@
           hoverBorderWidth: 0
         }]
       },
-      options: doughnutOptions()
+      options: {
+        responsive: true,
+        cutout: '0%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
+        }
+      }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     2. INCOME SOURCE PIE
-  ───────────────────────────────────────────── */
+  // ─── 3. INCOME SOURCE PIE ───
   if (incLabels.length && document.getElementById('incomePie')) {
     new Chart(document.getElementById('incomePie'), {
       type: 'doughnut',
@@ -644,13 +626,18 @@
           hoverBorderWidth: 0
         }]
       },
-      options: doughnutOptions()
+      options: {
+        responsive: true,
+        cutout: '0%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
+        }
+      }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     3. MONTHLY INCOME vs EXPENSE BAR
-  ───────────────────────────────────────────── */
+  // ─── 4. MONTHLY INCOME vs EXPENSE BAR ───
   if (monthLabels.length && document.getElementById('incomeExpenseBar')) {
     new Chart(document.getElementById('incomeExpenseBar'), {
       type: 'bar',
@@ -663,7 +650,8 @@
             backgroundColor: 'rgba(18,179,131,0.85)',
             borderRadius: 6,
             borderSkipped: false,
-            barPercentage: 0.55
+            barPercentage: 0.55,
+            hoverBackgroundColor: 'rgba(18,179,131,1)'
           },
           {
             label: 'Expenses',
@@ -671,7 +659,8 @@
             backgroundColor: 'rgba(239,68,68,0.85)',
             borderRadius: 6,
             borderSkipped: false,
-            barPercentage: 0.55
+            barPercentage: 0.55,
+            hoverBackgroundColor: 'rgba(239,68,68,1)'
           }
         ]
       },
@@ -679,52 +668,26 @@
         responsive: true,
         interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, pointStyleWidth: 8 }
-          },
-          tooltip: {
-            callbacks: {
-            	label: function(ctx) {
-            		  const label = ctx.label || ctx.dataset.label || '';
-            		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-            		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-            		}
-            }
-          }
+          legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 8 } },
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
         },
         scales: {
-          x: {
-            grid: { color: gridColor },
-            ticks: { color: tickColor }
-          },
-          y: {
-            beginAtZero: true,
-            grid: { color: gridColor },
-            ticks: {
-              color: tickColor,
-              callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v)
-            }
-          }
+          x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+          y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, callback: formatAxis } }
         }
       }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     4. SAVINGS RATE RING
-  ───────────────────────────────────────────── */
-  const savingsCanvas = document.getElementById('savingsRing');
-  if (savingsCanvas) {
-    new Chart(savingsCanvas, {
+  // ─── 5. SAVINGS RATE RING ───
+  if (document.getElementById('savingsRing')) {
+    const savingsColor = savingsRate >= 20 ? '#12b383' : savingsRate >= 10 ? '#f59e0b' : '#ef4444';
+    new Chart(document.getElementById('savingsRing'), {
       type: 'doughnut',
       data: {
         datasets: [{
           data: [savingsRate, 100 - savingsRate],
-          backgroundColor: [
-            savingsRate >= 20 ? '#12b383' : savingsRate >= 10 ? '#f59e0b' : '#ef4444',
-            isDark ? '#1a2236' : '#f1f5f9'
-          ],
+          backgroundColor: [savingsColor, isDark ? '#1a2236' : '#f1f5f9'],
           borderWidth: 0,
           hoverBorderWidth: 0
         }]
@@ -732,17 +695,16 @@
       options: {
         responsive: true,
         cutout: '78%',
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        animation: { animateRotate: true, duration: 1000 }
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
+        }
       }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     5. TOP CATEGORIES HORIZONTAL BAR
-  ───────────────────────────────────────────── */
+  // ─── 6. TOP CATEGORIES HORIZONTAL BAR ───
   if (expLabels.length && document.getElementById('topCategoriesBar')) {
-    // Sort descending and take top 6
     const combined = expLabels.map((l, i) => ({ label: l, value: expValues[i] }));
     combined.sort((a, b) => b.value - a.value);
     const top = combined.slice(0, 6);
@@ -757,7 +719,11 @@
           backgroundColor: top.map((_, i) => EXPENSE_PALETTE[i % EXPENSE_PALETTE.length]),
           borderRadius: 6,
           borderSkipped: false,
-          barPercentage: 0.6
+          barPercentage: 0.6,
+          hoverBackgroundColor: top.map((_, i) => {
+            const color = EXPENSE_PALETTE[i % EXPENSE_PALETTE.length];
+            return color.replace('0.', '1.'); // Increase opacity on hover
+          })
         }]
       },
       options: {
@@ -765,37 +731,17 @@
         responsive: true,
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-            	label: function(ctx) {
-            		  const label = ctx.label || ctx.dataset.label || '';
-            		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-            		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-            		}
-            }
-          }
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
         },
         scales: {
-          x: {
-            beginAtZero: true,
-            grid: { color: gridColor },
-            ticks: {
-              color: tickColor,
-              callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v)
-            }
-          },
-          y: {
-            grid: { display: false },
-            ticks: { color: tickColor }
-          }
+          x: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, callback: formatAxis } },
+          y: { grid: { display: false }, ticks: { color: tickColor } }
         }
       }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     6. PAYMENT MODE PIE
-  ───────────────────────────────────────────── */
+  // ─── 7. PAYMENT MODE PIE ───
   if (modeLabels.length && document.getElementById('paymentModePie')) {
     new Chart(document.getElementById('paymentModePie'), {
       type: 'doughnut',
@@ -814,27 +760,14 @@
         cutout: '65%',
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-            	label: function(ctx) {
-            		  const label = ctx.label || ctx.dataset.label || '';
-            		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-            		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-            		}
-            }
-          }
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
         }
       }
     });
   }
 
-  /* ─────────────────────────────────────────────
-     7. BALANCE TREND LINE
-  ───────────────────────────────────────────── */
+  // ─── 8. BALANCE TREND LINE ───
   if (trendLabels.length && document.getElementById('balanceLine')) {
-    const positiveColor = 'rgba(18,179,131,0.9)';
-    const negativeColor = 'rgba(239,68,68,0.9)';
-
     new Chart(document.getElementById('balanceLine'), {
       type: 'line',
       data: {
@@ -842,16 +775,17 @@
         datasets: [{
           label: 'Net Balance',
           data: trendValues,
-          borderColor: positiveColor,
+          borderColor: 'rgba(18,179,131,0.9)',
           backgroundColor: 'rgba(18,179,131,0.08)',
           fill: true,
           tension: 0.4,
           borderWidth: 2.5,
           pointRadius: 4,
-          pointBackgroundColor: positiveColor,
+          pointBackgroundColor: 'rgba(18,179,131,0.9)',
           pointBorderColor: isDark ? '#111827' : '#fff',
           pointBorderWidth: 2,
-          pointHoverRadius: 6
+          pointHoverRadius: 6,
+          hoverBorderWidth: 3
         }]
       },
       options: {
@@ -859,33 +793,17 @@
         interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-            	label: function(ctx) {
-            		  const label = ctx.label || ctx.dataset.label || '';
-            		  const value = ctx.raw ?? ctx.parsed?.y ?? ctx.parsed?.x ?? ctx.parsed ?? 0;
-            		  return `${label}: ₹${value.toLocaleString('en-IN')}`;
-            		}
-            }
-          }
+          tooltip: { enabled: true, callbacks: { label: formatTooltip } }
         },
         scales: {
-          x: {
-            grid: { color: gridColor },
-            ticks: { color: tickColor }
-          },
-          y: {
-            grid: { color: gridColor },
-            ticks: {
-              color: tickColor,
-              callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v)
-            }
-          }
+          x: { grid: { color: gridColor }, ticks: { color: tickColor } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor, callback: formatAxis } }
         }
       }
     });
   }
 })();
 </script>
+
 </body>
 </html>

@@ -9,13 +9,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 
 import com.grownited.entity.*;
 import com.grownited.repository.*;
+import com.grownited.service.ReportPdfService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -30,6 +37,7 @@ public class CustomerController {
     @Autowired private VendorRepository   vendorRepository;
     @Autowired private CategoryRepository categoryRepository;
     @Autowired private AccountRepository  accountRepository;
+    @Autowired private ReportPdfService   reportPdfService;
 
 
     @GetMapping("/customer-dashboard")
@@ -296,25 +304,6 @@ public class CustomerController {
         return "pages/dashboard/Insights";
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
-    // STUB ROUTES (future expansion)
-    // ══════════════════════════════════════════════════════════════════════════
-
-    @GetMapping("/budgets")
-    public String budgets(HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/login";
-        return "redirect:/customer-dashboard";   // Placeholder — replace with real budget page
-    }
-
-    @GetMapping("/notifications")
-    public String notifications(HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/login";
-        return "redirect:/customer-dashboard";   // Placeholder
-    }
-
-    // ══════════════════════════════════════════════════════════════════════════
-    // PRIVATE HELPERS — keep controller methods clean
-    // ══════════════════════════════════════════════════════════════════════════
 
     /** Returns BigDecimal.ZERO when null (avoids NPE throughout). */
     private BigDecimal safeDecimal(BigDecimal value) {
@@ -418,5 +407,52 @@ public class CustomerController {
                                              LocalDate to) {
         return sumFilteredByDate(expenses, from, to,
                 e -> e.getExpenseDate(), ExpenseEntity::getAmount);
+    }
+
+    @GetMapping("/reports/transactions/pdf")
+    public ResponseEntity<byte[]> downloadTransactionsPdf(
+            HttpSession session,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, "/login").build();
+        }
+        if (from.isAfter(to) || from.isBefore(to.minusYears(1))) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Integer userId = user.getUserId();
+
+        List<ExpenseEntity> expenses = expenseRepository.findByUserId(userId).stream()
+                .filter(e -> e.getExpenseDate() != null
+                        && !e.getExpenseDate().isBefore(from)
+                        && !e.getExpenseDate().isAfter(to))
+                .toList();
+
+        List<IncomeEntity> incomes = incomeRepository.findByUserId(userId).stream()
+                .filter(i -> i.getIncomeDate() != null
+                        && !i.getIncomeDate().isBefore(from)
+                        && !i.getIncomeDate().isAfter(to))
+                .toList();
+
+        // ── Build category map ────────────────────────────────────────────────────
+        Map<Integer, String> categoryMap = categoryRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        CategoryEntity::getCategoryId,
+                        CategoryEntity::getCategoryName,
+                        (a, b) -> a));
+
+        byte[] pdf = reportPdfService.buildDateWiseTransactionsPdf(
+                user, from, to, incomes, expenses, categoryMap);  // ← pass the map
+
+        String filename = String.format("transactions_%s_to_%s.pdf", from, to);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }
