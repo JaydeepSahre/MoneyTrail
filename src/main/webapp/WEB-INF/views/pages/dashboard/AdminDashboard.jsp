@@ -37,9 +37,6 @@
             <a href="${pageContext.request.contextPath}/listuser" class="btn btn-secondary btn-sm">
               <i class="bi bi-people me-1"></i> Manage Users
             </a>
-            <a href="${pageContext.request.contextPath}/admin/reports" class="btn btn-primary btn-sm">
-              <i class="bi bi-bar-chart me-1"></i> Reports
-            </a>
           </div>
         </div>
       </div>

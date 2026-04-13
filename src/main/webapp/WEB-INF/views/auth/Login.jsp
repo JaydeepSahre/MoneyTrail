@@ -63,7 +63,7 @@
       <form action="${pageContext.request.contextPath}/authenticate" method="POST" id="loginForm" novalidate>
 
         <div class="form-group">
-          <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+          <label class="form-label" for="email">Email Address<span class="required">*</span></label>
           <div class="input-wrapper">
             <i class="bi bi-envelope input-icon"></i>
             <input type="email" id="email" name="email" class="form-input has-icon"
